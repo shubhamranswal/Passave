@@ -21,7 +21,7 @@ It helps users generate, store, and manage credentials securely across devices â
 
 > End-to-end encrypted password management with keys known only to you.
 
----g
+---
 
 ## âœ¨ Key Highlights
 
