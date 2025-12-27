@@ -4,7 +4,7 @@
         android:required="false" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <application
-        android:label="passave"
+        android:label="Passave"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
