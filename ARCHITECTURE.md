@@ -1,4 +1,4 @@
-# Passave – Architecture Overview
+# Passave - Architecture Overview
 
 This document describes the **high-level architecture, security model, and data flow** of Passave.
 

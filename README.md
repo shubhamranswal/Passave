@@ -1,22 +1,38 @@
-# 🔐 Passave
+<div align="center">
+  <img src="https://github.com/shubhamranswal/Passave/blob/main/assets/images/logo.png?raw=true" 
+    alt="Passave Logo" 
+    width="120"
+    style="margin-bottom: 8px;"
+  />
+  <h1 style="margin: 0;">Passave</h1>
+</div>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Security-Zero%20Knowledge-2ea44f?style=flat-square" />
+  <img src="https://img.shields.io/badge/Encryption-AES%20%7C%20Argon2-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Status-Active%20Development-orange?style=flat-square" />
+  <img src="https://img.shields.io/badge/License-MIT-purple?style=flat-square" />
+</p>
+
+---
 
 **Passave** is a modern, secure, cross-platform password manager built with a **vault-first, zero-knowledge architecture**.  
 It helps users generate, store, and manage credentials securely across devices — without ever exposing secrets to the server.
 
-> Your passwords. Encrypted. Everywhere. Only you hold the keys.
+> End-to-end encrypted password management with keys known only to you.
 
----
+---g
 
 ## ✨ Key Highlights
 
-- 🔒 **Zero-Knowledge Encryption** – Server never sees your passwords
-- 🧠 **Vault-First Architecture** – Security before accounts
-- 🔑 **Master Password + Recovery Key** – No fake resets, real safety
-- 📱 **Multi-Device Sync** – Encrypted vault sync via cloud
-- ⚡ **Autofill Support** – Across apps and websites
-- 🔁 **KeePass Compatible** – Import & export supported
-- 🧬 **Configurable Security Levels** – Encryption strength per credential
-- 🌙 **Premium Dark UI** – Clean, calm, security-first design
+- 🔒 **Zero-Knowledge Encryption** - Server never sees your passwords
+- 🧠 **Vault-First Architecture** - Security before accounts
+- 🔑 **Master Password + Recovery Key** - No fake resets, real safety
+- 📱 **Multi-Device Sync** - Encrypted vault sync via cloud
+- ⚡ **Autofill Support** - Across apps and websites
+- 🔁 **KeePass Compatible** - Import & export supported
+- 🧬 **Configurable Security Levels** - Encryption strength per credential
+- 🌙 **Premium Dark UI** - Clean, calm, security-first design
 
 ---
 
@@ -99,20 +115,6 @@ Each credential can be assigned a security tier:
 
 ---
 
-## 🚀 Planned Screens & Flows
-
-- ✅ Vault Home
-- ✅ Add / Edit / View Credential
-- ✅ Delete with confirmation
-- ⏳ Onboarding (intro & trust screens)
-- ⏳ Create Vault flow
-- ⏳ Unlock / Forgot Master Password
-- ⏳ Profile / Settings hub
-- ⏳ Import / Export
-- ⏳ Autofill permission flows
-
----
-
 ## 🛠 Tech Stack
 
 - **Frontend:** Flutter
@@ -136,13 +138,13 @@ This project is actively being developed with a **security-first mindset**.
 
 ## 📜 License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the [**MIT License**](LICENSE)
 
 You are free to use, modify, and distribute this project with proper attribution.
 
 ---
 
-## ❤️ Built with love by Shubham Singh Ranswal
+## Designed and built by Shubham Singh Ranswal
 
 - 🌐 Portfolio: https://shubham-ranswal.web.app/
 - 💼 LinkedIn: https://www.linkedin.com/in/shubhamranswal

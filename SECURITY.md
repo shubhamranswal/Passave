@@ -1,4 +1,4 @@
-# Security Policy – Passave
+# Security Policy - Passave
 
 Passave is a security-first password manager built on a **zero-knowledge, vault-first architecture**.  
 This document explains our security philosophy, threat model, recovery design, and responsible disclosure process.
