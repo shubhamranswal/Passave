@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:passave/features/shell/main_shell.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
 import '../../core/crypto/vault_key_cache.dart';
 import '../../core/crypto/vault_key_manager_global.dart';
 import '../../core/crypto/vault_session.dart';
+import '../../core/crypto/vault_verifier.dart';
 import '../../core/theme/passave_theme.dart';
-import '../../features/vault/vault_home_page.dart';
+import '../vault/widgets/password_field.dart';
 
 class ResetMasterPasswordPage extends StatefulWidget {
   const ResetMasterPasswordPage({super.key});
@@ -40,22 +42,18 @@ class _ResetMasterPasswordPageState extends State<ResetMasterPasswordPage> {
 
     try {
       final kdf = KeyDerivationService();
-
-      // Derive new vault key from NEW master password
       final newKey = await kdf.deriveKey(_passwordController.text);
-
-      // Replace key in memory
-      vaultKeyManagerGlobal.unlock(newKey);
+      await vaultKeyManagerGlobal.unlock(newKey);
+      await vaultVerifier.initialize(newKey);
+      await vaultKeyCache.clear();
       await vaultKeyCache.store(newKey);
-
-      // Exit recovery mode
       vaultSession.exitRecovery();
 
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const VaultHomePage(),
+          builder: (_) => const MainShell(),
         ),
       );
     } catch (_) {
@@ -87,17 +85,14 @@ class _ResetMasterPasswordPageState extends State<ResetMasterPasswordPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              TextField(
+              PasswordField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'New Password'),
+                label: 'New Master Password',
               ),
               const SizedBox(height: 16),
-              TextField(
+              PasswordField(
                 controller: _confirmController,
-                obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: 'Confirm New Password'),
+                label: 'Confirm New Master Password',
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),

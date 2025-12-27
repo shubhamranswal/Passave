@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:passave/features/shell/main_shell.dart';
 
 import 'core/crypto/key_derivation_service.dart';
 import 'core/crypto/vault_key_manager_global.dart';
 import 'features/auth/create_vault_page.dart';
 import 'features/auth/vault_locked_page.dart';
-import 'features/vault/vault_home_page.dart';
 
 class AppEntry extends StatelessWidget {
   const AppEntry({super.key});
@@ -22,18 +22,15 @@ class AppEntry extends StatelessWidget {
 
         final vaultExists = snapshot.data!;
 
-        // 🚨 FIRST-TIME USER
         if (!vaultExists) {
           return const CreateVaultPage();
         }
 
-        // 🔐 Vault exists but locked
         if (!vaultKeyManagerGlobal.isUnlocked) {
           return const VaultLockedPage();
         }
 
-        // 🔓 Vault unlocked
-        return const VaultHomePage();
+        return const MainShell();
       },
     );
   }

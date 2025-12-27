@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:passave/features/auth/recover_vault_page.dart';
+import 'package:passave/features/vault/widgets/password_field.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
 import '../../core/crypto/vault_key_cache.dart';
 import '../../core/crypto/vault_key_manager_global.dart';
+import '../../core/crypto/vault_verifier.dart';
 import '../../core/security/biometric_service.dart';
 import '../../core/theme/passave_theme.dart';
-import '../../features/vault/vault_home_page.dart';
+import '../shell/main_shell.dart';
 
 class UnlockVaultPage extends StatefulWidget {
   const UnlockVaultPage({super.key});
@@ -39,20 +42,23 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
     });
 
     try {
-      final keyDerivation = KeyDerivationService();
-      final vaultKeyManager = vaultKeyManagerGlobal;
+      final kdf = KeyDerivationService();
+      final derivedKey = await kdf.deriveKey(_passwordController.text);
+      final isValid = await vaultVerifier.verify(derivedKey);
+      if (!isValid) {
+        throw Exception('Incorrect password');
+      }
 
-      final key = await keyDerivation.deriveKey(_passwordController.text);
-      vaultKeyManager.unlock(key);
-
-      await vaultKeyCache.store(key);
+      await vaultKeyManagerGlobal.unlock(derivedKey);
+      await vaultKeyCache.store(derivedKey);
 
       if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 250),
-          pageBuilder: (_, __, ___) => const VaultHomePage(),
+          pageBuilder: (_, __, ___) => const MainShell(),
           transitionsBuilder: (_, anim, __, child) {
             return FadeTransition(
               opacity: anim,
@@ -69,33 +75,30 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
   }
 
   Future<void> _unlockWithBiometrics() async {
-    debugPrint('① biometric flow started');
-
     final available = await biometricService.isAvailable();
-    debugPrint('② biometric available = $available');
     if (!available) return;
 
     final enabled = await biometricService.isEnabled();
-    debugPrint('③ biometric enabled = $enabled');
     if (!enabled) return;
 
-    debugPrint('④ calling authenticate()');
     final ok = await biometricService.authenticate();
-    debugPrint('⑤ authenticate result = $ok');
-    if (!ok) return;
+    if (!ok) {
+      setState(() {
+        _error = 'Biometric authentication failed. Enter master password.';
+      });
+      return;
+    }
 
     final cachedKey = await vaultKeyCache.load();
-    debugPrint('⑥ cached key exists = ${cachedKey != null}');
     if (cachedKey == null) return;
 
     vaultKeyManagerGlobal.unlock(cachedKey);
-    debugPrint('⑦ vault unlocked');
 
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => const VaultHomePage(),
+        builder: (_) => const MainShell(),
       ),
     );
   }
@@ -116,16 +119,9 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Enter your master password to unlock',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Master Password'),
-              ),
+              PasswordField(
+                  controller: _passwordController,
+                  label: 'Enter your master password'),
               if (_error != null) ...[
                 const SizedBox(height: 12),
                 Text(_error!, style: const TextStyle(color: Colors.red)),
@@ -145,6 +141,20 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
               TextButton(
                 onPressed: _unlockWithBiometrics,
                 child: const Text('Unlock with Biometrics'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const RecoverVaultPage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Forgot master password?',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
               ),
             ],
           ),

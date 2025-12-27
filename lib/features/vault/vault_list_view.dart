@@ -39,10 +39,6 @@ class _VaultListViewState extends State<VaultListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addCredential,
-        child: const Icon(Icons.add),
-      ),
       body: SafeArea(
         child: FutureBuilder<List<Credential>>(
           future: _credentialsFuture,

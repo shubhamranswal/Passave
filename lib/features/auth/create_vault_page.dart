@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:passave/features/auth/recovery_key_page.dart';
+import 'package:passave/core/crypto/recovery_key_service.dart';
+import 'package:passave/core/vault/vault_creation_session.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
-import '../../core/crypto/vault_key_cache.dart';
-import '../../core/crypto/vault_key_manager_global.dart';
-import '../../core/security/biometric_service.dart';
 import '../../core/theme/passave_theme.dart';
-import '../../features/vault/vault_home_page.dart';
+import '../recovery/confirm_recovery_key_page.dart';
+import '../vault/widgets/password_field.dart';
 
 class CreateVaultPage extends StatefulWidget {
   const CreateVaultPage({super.key});
@@ -39,37 +38,26 @@ class _CreateVaultPageState extends State<CreateVaultPage> {
     });
 
     try {
-      final keyDerivation = KeyDerivationService();
-      final vaultKeyManager = vaultKeyManagerGlobal;
+      final kdf = KeyDerivationService();
 
-      await keyDerivation.generateAndStoreSalt();
-      final key = await keyDerivation.deriveKey(_passwordController.text);
+      await kdf.generateAndStoreSalt();
+      final vaultKey = await kdf.deriveKey(_passwordController.text);
+      final recoveryKey = recoveryKeyService.generate();
 
-      vaultKeyManager.unlock(key);
-      await vaultKeyCache.store(key);
-      await biometricService.enable();
-
-      final recoveryKey = keyDerivation.generateRecoveryKey();
-      await keyDerivation.storeRecoveryKey(recoveryKey);
+      vaultCreationSession.start(
+        key: vaultKey,
+        recoveryKey: recoveryKey,
+      );
 
       if (!mounted) return;
-
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => RecoveryKeyPage(
-            recoveryKey: recoveryKey,
-          ),
-        ),
-      );
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const VaultHomePage(),
+          builder: (_) => const ConfirmRecoveryKeyPage(),
         ),
       );
-    } catch (e) {
+    } catch (_) {
       setState(() => _error = 'Failed to create vault');
     } finally {
       setState(() => _loading = false);
@@ -98,17 +86,14 @@ class _CreateVaultPageState extends State<CreateVaultPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              TextField(
+              PasswordField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Master Password'),
+                label: 'New Master Password',
               ),
               const SizedBox(height: 16),
-              TextField(
+              PasswordField(
                 controller: _confirmController,
-                obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: 'Confirm Master Password'),
+                label: 'Confirm New Master Password',
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),

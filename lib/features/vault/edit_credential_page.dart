@@ -166,6 +166,7 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
                     const SizedBox(height: 8),
                     PasswordField(
                       controller: _passwordController,
+                      label: '',
                     ),
                     const SizedBox(height: 24),
                     const SectionTitle(title: 'Security Level'),

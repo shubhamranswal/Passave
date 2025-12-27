@@ -4,7 +4,6 @@ import 'package:passave/features/auth/reset_master_password_page.dart';
 import '../../core/crypto/key_derivation_service.dart';
 import '../../core/crypto/vault_key_manager_global.dart';
 import '../../core/crypto/vault_session.dart';
-import '../../features/vault/vault_home_page.dart';
 
 class RecoverVaultPage extends StatefulWidget {
   const RecoverVaultPage({super.key});
@@ -29,7 +28,7 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
       final key =
           await service.deriveKeyFromRecoveryKey(_controller.text.trim());
 
-      vaultKeyManagerGlobal.unlock(key);
+      await vaultKeyManagerGlobal.unlock(key);
       vaultSession.enterRecovery();
 
       if (!mounted) return;
@@ -37,12 +36,6 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
         context,
         MaterialPageRoute(
           builder: (_) => const ResetMasterPasswordPage(),
-        ),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const VaultHomePage(),
         ),
       );
     } catch (_) {

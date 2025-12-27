@@ -71,7 +71,7 @@ class _AddCredentialPageState extends State<AddCredentialPage> {
                   const SizedBox(height: 24),
                   const SectionTitle(title: 'Password'),
                   const SizedBox(height: 8),
-                  PasswordField(controller: _passwordController),
+                  PasswordField(controller: _passwordController, label: ''),
                   const SizedBox(height: 24),
                   const SectionTitle(title: 'Security Level'),
                   const SizedBox(height: 12),

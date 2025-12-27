@@ -1,20 +1,26 @@
 import 'dart:async';
 
+import 'package:passave/core/security/auto_lock_timeout.dart';
+
 import '../crypto/vault_key_manager_global.dart';
+import 'auto_lock_preferences.dart';
 
 class AutoLockService {
-  static const Duration defaultTimeout = Duration(minutes: 5);
-
   Timer? _timer;
 
-  void start({Duration timeout = defaultTimeout}) {
+  Future<void> start() async {
     _timer?.cancel();
-    _timer = Timer(timeout, _lock);
+
+    final timeout = await autoLockPreferences.load();
+    final duration = timeout.duration;
+
+    if (duration == null) return; // Never auto-lock
+
+    _timer = Timer(duration, _lock);
   }
 
-  void reset() {
-    _timer?.cancel();
-    _timer = Timer(defaultTimeout, _lock);
+  Future<void> reset() async {
+    await start();
   }
 
   void stop() {
