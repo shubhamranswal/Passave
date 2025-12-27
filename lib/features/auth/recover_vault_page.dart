@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:passave/features/auth/reset_master_password_page.dart';
 
-import '../../core/crypto/key_derivation_service.dart';
-import '../../core/crypto/vault_key_manager_global.dart';
+import '../../core/crypto/recovery_key_storage.dart';
 import '../../core/crypto/vault_session.dart';
 
 class RecoverVaultPage extends StatefulWidget {
@@ -24,13 +23,16 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
     });
 
     try {
-      final service = KeyDerivationService();
-      final key =
-          await service.deriveKeyFromRecoveryKey(_controller.text.trim());
+      final storedKey = await recoveryKeyStorage.read();
+      if (storedKey == null) {
+        throw Exception('No recovery key found');
+      }
 
-      await vaultKeyManagerGlobal.unlock(key);
+      if (_controller.text.trim() != storedKey) {
+        throw Exception('Invalid recovery key');
+      }
+
       vaultSession.enterRecovery();
-
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

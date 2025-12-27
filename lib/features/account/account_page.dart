@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/crypto/vault_key_cache.dart';
 import '../../core/crypto/vault_key_manager_global.dart';
+import '../../core/crypto/vault_session.dart';
 import '../auth/vault_locked_page.dart';
 import '../settings/auto_lock_settings_page.dart';
 import '../settings/change_master_password_page.dart';
@@ -11,8 +11,8 @@ class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
 
   void _lockVault(BuildContext context) async {
-    await vaultKeyCache.clear();
     vaultKeyManagerGlobal.lock();
+    vaultSession.lock();
 
     Navigator.pushAndRemoveUntil(
       context,

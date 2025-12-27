@@ -1,5 +1,6 @@
 class VaultSession {
   bool isRecoveryMode = false;
+  bool _locked = true;
 
   void enterRecovery() {
     isRecoveryMode = true;
@@ -7,6 +8,16 @@ class VaultSession {
 
   void exitRecovery() {
     isRecoveryMode = false;
+  }
+
+  bool get isLocked => _locked;
+
+  void lock() {
+    _locked = true;
+  }
+
+  void unlock() {
+    _locked = false;
   }
 }
 

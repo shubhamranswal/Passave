@@ -12,11 +12,6 @@ class KeyDerivationService {
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  Future<bool> vaultExists() async {
-    final salt = await _storage.read(key: _saltKey);
-    return salt != null;
-  }
-
   /// Called ONCE when vault is created
   Future<void> generateAndStoreSalt() async {
     final random = Random.secure();
@@ -69,13 +64,6 @@ class KeyDerivationService {
       result |= a[i] ^ b[i];
     }
     return result == 0;
-  }
-
-  /// Generate a human-friendly recovery key
-  String generateRecoveryKey() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    final rand = Random.secure();
-    return List.generate(20, (_) => chars[rand.nextInt(chars.length)]).join();
   }
 
   /// Store hashed recovery key (never plaintext)

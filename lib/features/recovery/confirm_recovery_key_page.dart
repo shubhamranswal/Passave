@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passave/core/vault/vault_metadata.dart';
 
 import '../../core/crypto/recovery_key_storage.dart';
 import '../../core/crypto/vault_key_cache.dart';
@@ -46,6 +47,7 @@ class _ConfirmRecoveryKeyPageState extends State<ConfirmRecoveryKeyPage>
     vaultCreationSession.clear();
     await recoveryKeyStorage.clear();
     await vaultKeyCache.clear();
+    await vaultMetadata.clear();
   }
 
   Future<void> _finalizeVault() async {
@@ -61,6 +63,7 @@ class _ConfirmRecoveryKeyPageState extends State<ConfirmRecoveryKeyPage>
     await vaultKeyCache.store(key);
     await biometricService.enable();
     await recoveryKeyStorage.store(recoveryKey);
+    await vaultMetadata.markExists();
     session.clear();
 
     if (!mounted) return;

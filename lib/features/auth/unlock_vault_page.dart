@@ -5,6 +5,7 @@ import 'package:passave/features/vault/widgets/password_field.dart';
 import '../../core/crypto/key_derivation_service.dart';
 import '../../core/crypto/vault_key_cache.dart';
 import '../../core/crypto/vault_key_manager_global.dart';
+import '../../core/crypto/vault_session.dart';
 import '../../core/crypto/vault_verifier.dart';
 import '../../core/security/biometric_service.dart';
 import '../../core/theme/passave_theme.dart';
@@ -50,6 +51,7 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
       }
 
       await vaultKeyManagerGlobal.unlock(derivedKey);
+      vaultSession.unlock();
       await vaultKeyCache.store(derivedKey);
 
       if (!mounted) return;
@@ -81,26 +83,45 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
     final enabled = await biometricService.isEnabled();
     if (!enabled) return;
 
-    final ok = await biometricService.authenticate();
-    if (!ok) {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    try {
+      final ok = await biometricService.authenticate();
+      if (!ok) {
+        throw Exception('Biometric authentication failed');
+      }
+
+      final cachedKey = await vaultKeyCache.load();
+      if (cachedKey == null) {
+        throw Exception('No cached vault key');
+      }
+
+      final isValid = await vaultVerifier.verify(cachedKey);
+      if (!isValid) {
+        throw Exception('Cached vault key invalid');
+      }
+
+      vaultKeyManagerGlobal.unlock(cachedKey);
+      vaultSession.unlock();
+
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const MainShell(),
+        ),
+      );
+    } catch (e) {
       setState(() {
-        _error = 'Biometric authentication failed. Enter master password.';
+        _error =
+            'Biometric unlock failed. Enter master password. ${e.toString()}';
       });
-      return;
+    } finally {
+      setState(() => _loading = false);
     }
-
-    final cachedKey = await vaultKeyCache.load();
-    if (cachedKey == null) return;
-
-    vaultKeyManagerGlobal.unlock(cachedKey);
-
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const MainShell(),
-      ),
-    );
   }
 
   @override
