@@ -17,7 +17,7 @@
 ---
 
 **Passave** is a modern, secure, cross-platform password manager built with a **vault-first, zero-knowledge architecture**.  
-It helps users generate, store, and manage credentials securely across devices — without ever exposing secrets to the server.
+It helps users generate, store, and manage credentials securely across devices - without ever exposing secrets to the server.
 
 > End-to-end encrypted password management with keys known only to you.
 
@@ -58,7 +58,7 @@ Passave is built on a **true zero-knowledge model**:
    - Cannot read or decrypt user data
    - Sync ≠ recovery
 
-> If both master password and recovery key are lost and no trusted device exists, the vault is unrecoverable — by design.
+> If both master password and recovery key are lost and no trusted device exists, the vault is unrecoverable - by design.
 
 ---
 
