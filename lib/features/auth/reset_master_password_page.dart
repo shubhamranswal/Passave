@@ -139,10 +139,9 @@ class _ResetMasterPasswordPageState extends State<ResetMasterPasswordPage> {
           child: SizedBox(
             height: 52,
             child: PassaveButton(
-              onPressed: _loading ? () {} : _reset,
-              text: _loading
-                  ? 'Resetting...'
-                  : 'Reset Password',
+              onPressed: _reset,
+              loading: _loading,
+              text: 'Reset Password',
             ),
           ),
         ),

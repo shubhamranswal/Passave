@@ -15,7 +15,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final _controller = PageController();
   int _index = 0;
 
-  void _finish() async {
+  Future<void> _finish() async {
     await onboardingService.markCompleted();
     if (!mounted) return;
     Navigator.pushReplacement(
@@ -61,7 +61,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 width: double.infinity,
                 height: 52,
                 child: PassaveButton(
-                  isPrimary: false,
+                  isPrimary: _index == 2,
                   onPressed: _index == 2
                       ? _finish
                       : () => _controller.nextPage(

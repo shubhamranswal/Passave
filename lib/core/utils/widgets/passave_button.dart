@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class PassaveButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final Future<void> Function()? onPressed;
   final bool isPrimary;
+  final bool loading;
+  final bool enabled;
   final double? width;
   final double? height;
 
@@ -12,6 +14,8 @@ class PassaveButton extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.isPrimary = true,
+    this.loading = false,
+    this.enabled = true,
     this.width,
     this.height,
   });
@@ -20,19 +24,21 @@ class PassaveButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
-    final textColor = isPrimary ? Colors.white : primaryColor;
+    final disabled = loading || !enabled;
 
     final buttonStyle = isPrimary
         ? ElevatedButton.styleFrom(
             backgroundColor: primaryColor,
-            foregroundColor: textColor,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: primaryColor.withOpacity(0.5),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           )
         : OutlinedButton.styleFrom(
-            foregroundColor: textColor,
+            foregroundColor: primaryColor,
+            disabledForegroundColor: primaryColor.withOpacity(0.5),
             side: BorderSide(color: primaryColor),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -40,18 +46,30 @@ class PassaveButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           );
 
+    final child = loading
+        ? const SizedBox(
+            height: 18,
+            width: 18,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white,
+            ),
+          )
+        : Text(
+            text,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          );
+
     final button = isPrimary
         ? ElevatedButton(
             style: buttonStyle,
-            onPressed: onPressed,
-            child:
-                Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
+            onPressed: disabled ? null : onPressed,
+            child: child,
           )
         : OutlinedButton(
             style: buttonStyle,
-            onPressed: onPressed,
-            child:
-                Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
+            onPressed: disabled ? null : onPressed,
+            child: child,
           );
 
     if (width != null || height != null) {

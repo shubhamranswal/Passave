@@ -145,7 +145,8 @@ class _ConfirmRecoveryKeyPageState extends State<ConfirmRecoveryKeyPage>
                 width: double.infinity,
                 height: 52,
                 child: PassaveButton(
-                  onPressed: _confirmed ? _finalizeVault : (){},
+                  loading: !_confirmed,
+                  onPressed: _finalizeVault,
                   text: 'Continue',
                 ),
               ),

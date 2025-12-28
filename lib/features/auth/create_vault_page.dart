@@ -140,10 +140,9 @@ class _CreateVaultPageState extends State<CreateVaultPage> {
         child: SizedBox(
           height: 52,
           child: PassaveButton(
-            onPressed: _loading ? () {} : _createVault,
-            text: _loading
-                ? 'Creating Vault'
-                : 'Create Vault',
+            text: 'Create Vault',
+            loading: _loading,
+            onPressed: _createVault,
           ),
         ),
       ),

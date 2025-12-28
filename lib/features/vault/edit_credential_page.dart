@@ -144,7 +144,9 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
                 children: [
                   Expanded(
                     child: PassaveButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      },
                       text: 'Cancel',
                       isPrimary: false,
                     ),
@@ -270,8 +272,9 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
         child: SizedBox(
           height: 52,
           child: PassaveButton(
-            text: _isSaving ? 'Saving Changes' : 'Save Changes',
-            onPressed: _isSaving ? () {} : _saveChanges,
+            loading: _isSaving,
+            text: 'Save Changes',
+            onPressed: _saveChanges,
           ),
         ),
       ),

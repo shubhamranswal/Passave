@@ -108,8 +108,9 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
           width: double.infinity,
           height: 52,
           child: PassaveButton(
-            onPressed: _loading ? () {} : _recover,
-            text: _loading ? 'Recovering...' : 'Recover Vault',
+            loading: _loading,
+            onPressed: _recover,
+            text: 'Recover Vault',
           ),
         ),
       ),

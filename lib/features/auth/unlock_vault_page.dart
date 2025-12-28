@@ -159,19 +159,13 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
               width: double.infinity,
               height: 52,
               child: PassaveButton(
-                onPressed: _loading ? () {} : _unlockVault,
-                text: _loading
-                    ? 'Unlocking...'
-                    : 'Unlock Vault',
+                loading: _loading,
+                onPressed: _unlockVault,
+                text: 'Unlock Vault',
               ),
             ),
             const SizedBox(height: 24),
-            // TextButton(
-            //   onPressed: _loading ? null : _unlockWithBiometrics,
-            //   child: const Text('Unlock with Biometrics'),
-            // ),
-            PassaveButton(
-              isPrimary: false,
+            TextButton(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -180,7 +174,10 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
                   ),
                 );
               },
-              text: 'Forgot master password?',
+              child: const Text(
+                'Forgot master password?',
+                style: TextStyle(decoration: TextDecoration.underline),
+              ),
             ),
           ],
         ),

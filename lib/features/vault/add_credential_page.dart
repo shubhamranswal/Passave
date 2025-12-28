@@ -39,7 +39,7 @@ class _AddCredentialPageState extends State<AddCredentialPage> {
   Timer? _strengthDebounce;
   final _passwordStrengthService = PasswordStrengthService();
 
-  void _save() async {
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSaving = true);
     final now = DateTime.now();
@@ -192,8 +192,9 @@ class _AddCredentialPageState extends State<AddCredentialPage> {
         child: SizedBox(
           height: 52,
           child: PassaveButton(
-            text: _isSaving ? 'Saving Credential' : 'Save Credential',
-            onPressed: _isSaving ? () {} : _save,
+            loading: _isSaving,
+            text: 'Save Credential',
+            onPressed: _save,
           ),
         ),
       ),

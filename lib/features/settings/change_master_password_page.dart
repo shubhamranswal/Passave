@@ -149,10 +149,9 @@ class _ChangeMasterPasswordPageState extends State<ChangeMasterPasswordPage> {
         child: SizedBox(
           height: 52,
           child: PassaveButton(
-            onPressed: _loading ? () {} : _changePassword,
-            text: _loading
-                ? 'Updating...'
-                : 'Update Password',
+            loading: _loading,
+            onPressed: _changePassword,
+            text: 'Update Password',
           ),
         ),
       ),
