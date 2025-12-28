@@ -8,7 +8,6 @@ class NotificationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TEMP: static data (later replace with real source)
     final today = [
       const _NotificationItemData(
         icon: Icons.warning_amber_rounded,

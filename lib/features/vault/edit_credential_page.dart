@@ -157,7 +157,6 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
                         if (!mounted) return;
                         Navigator.pop(context);
                         Navigator.pop(context);
-                        Navigator.pop(context);
                       },
                       text: 'Delete',
                     ),

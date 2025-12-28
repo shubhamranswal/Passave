@@ -22,7 +22,7 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  HomeTab _currentTab = HomeTab.vault;
+  HomeTab _currentTab = HomeTab.overview;
 
   @override
   Widget build(BuildContext context) {

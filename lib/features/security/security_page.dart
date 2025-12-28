@@ -27,7 +27,6 @@ class SecurityPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Security')),
       body: ListView(
         children: [
-          // ===== STATUS =====
           _section(context, 'Status'),
           SecurityStatusTile(
             icon: Icons.lock_outline,

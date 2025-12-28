@@ -55,11 +55,12 @@ class VaultEmptyView extends StatelessWidget {
                     ),
                   ),
                   onPressed: onAdd,
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add, color: PassaveTheme.surfaceLight),
                   label: const Text(
-                    'Add Password',
+                    'Get started',
                     style: TextStyle(
                       fontSize: 16,
+                      color: PassaveTheme.surfaceLight,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

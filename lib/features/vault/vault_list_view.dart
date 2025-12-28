@@ -3,11 +3,13 @@ import 'package:passave/features/vault/repository/vault_provider.dart';
 
 import 'add_credential_page.dart';
 import 'models/credential.dart';
+import 'models/security_level.dart';
 import 'vault_empty_view.dart';
 import 'widgets/vault_item_card.dart';
 
 class VaultListView extends StatefulWidget {
-  const VaultListView({super.key});
+  final SecurityLevel? filter;
+  const VaultListView({super.key, this.filter});
 
   @override
   State<VaultListView> createState() => _VaultListViewState();
@@ -19,11 +21,13 @@ class _VaultListViewState extends State<VaultListView> {
   @override
   void initState() {
     super.initState();
-    _load();
+    _credentialsFuture = _load();
   }
 
-  void _load() {
-    _credentialsFuture = vaultRepository.getAll();
+  Future<List<Credential>> _load() async {
+    final List<Credential> all = await vaultRepository.getAll();
+    if (widget.filter == null) return all;
+    return all.where((c) => c.securityLevel == widget.filter).toList();
   }
 
   Future<void> _addCredential() async {
