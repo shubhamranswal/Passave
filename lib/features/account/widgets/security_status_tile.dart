@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/theme/passave_theme.dart';
 
 class SecurityStatusTile extends StatelessWidget {
   final IconData icon;
@@ -18,7 +19,7 @@ class SecurityStatusTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = ok ? Colors.green : Colors.orange;
+    final color = ok ? PassaveTheme.primary : PassaveTheme.danger;
 
     return InkWell(
       onTap: onTap,

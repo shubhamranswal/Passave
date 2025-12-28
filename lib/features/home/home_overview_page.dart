@@ -140,7 +140,7 @@ class _SecurityHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String resp = 'Tip: Mark sensitive accounts as High security.';
+    String resp = 'Tip: Mark sensitive accounts as High account.';
     if (total == 0) {
       resp = 'Start by adding your first credential.';
     }

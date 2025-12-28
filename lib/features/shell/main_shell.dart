@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:passave/features/account/account_page.dart';
 
 import '../../core/crypto/vault_key_manager_global.dart';
 import '../../core/utils/theme/passave_theme.dart';
 import '../../core/utils/widgets/passave_scaffold.dart';
 import '../home/home_overview_page.dart';
 import '../notifications/notifications_page.dart';
-import '../security/security_page.dart';
 import '../vault/add_credential_page.dart';
 import '../vault/vault_list_view.dart';
 
@@ -30,7 +30,13 @@ class _MainShellState extends State<MainShell> {
       appBar: AppBar(
         title: const Text('Passave'),
         leading: IconButton(
-          icon: const Icon(Icons.security),
+          icon: const CircleAvatar(
+            radius: 25,
+            child: Icon(
+              Icons.account_circle_rounded,
+              size: 40,
+            ),
+          ),
           onPressed: _onSecurityPressed,
         ),
         actions: [
@@ -82,7 +88,7 @@ class _MainShellState extends State<MainShell> {
                   onTap: () => _switch(HomeTab.vault),
                 ),
                 _NavIcon(
-                  icon: Icons.shield_outlined,
+                  icon: Icons.security,
                   active: _currentTab == HomeTab.overview,
                   onTap: () => _switch(HomeTab.overview),
                 ),
@@ -118,7 +124,7 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _onSecurityPressed() {
-    _onPressed(const SecurityPage());
+    _onPressed(const AccountPage());
   }
 
   void _onNotificationPressed() {
