@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passave/core/utils/widgets/passave_button.dart';
 import 'package:passave/core/vault/vault_metadata.dart';
 
 import '../../core/crypto/recovery_key_storage.dart';
@@ -143,9 +144,9 @@ class _ConfirmRecoveryKeyPageState extends State<ConfirmRecoveryKeyPage>
               SizedBox(
                 width: double.infinity,
                 height: 52,
-                child: ElevatedButton(
-                  onPressed: _confirmed ? _finalizeVault : null,
-                  child: const Text('Continue'),
+                child: PassaveButton(
+                  onPressed: _confirmed ? _finalizeVault : (){},
+                  text: 'Continue',
                 ),
               ),
             ],

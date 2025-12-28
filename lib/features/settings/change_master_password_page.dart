@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_button.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
 import '../../core/crypto/vault_key_cache.dart';
 import '../../core/crypto/vault_key_manager_global.dart';
 import '../../core/crypto/vault_verifier.dart';
 import '../../core/utils/widgets/password_field.dart';
-import '../vault/widgets/section_title.dart';
+import '../../core/utils/widgets/section_title.dart';
 
 class ChangeMasterPasswordPage extends StatefulWidget {
   const ChangeMasterPasswordPage({super.key});
@@ -147,15 +148,11 @@ class _ChangeMasterPasswordPageState extends State<ChangeMasterPasswordPage> {
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           height: 52,
-          child: ElevatedButton(
-            onPressed: _loading ? null : _changePassword,
-            child: _loading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Update Password'),
+          child: PassaveButton(
+            onPressed: _loading ? () {} : _changePassword,
+            text: _loading
+                ? 'Updating...'
+                : 'Update Password',
           ),
         ),
       ),

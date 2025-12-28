@@ -1,14 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_button.dart';
 import 'package:passave/core/utils/widgets/passave_scaffold.dart';
+import 'package:passave/core/utils/widgets/security_level_form_field.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../core/utils/theme/passave_theme.dart';
+import '../../core/security/password_strength/password_strength.dart';
 import '../../core/utils/widgets/passave_textfield.dart';
 import '../../core/utils/widgets/password_field.dart';
+import '../../core/utils/widgets/section_title.dart';
 import 'models/credential.dart';
+import 'models/security_level.dart';
 import 'repository/vault_provider.dart';
-import 'widgets/section_title.dart';
-import 'widgets/security_level_selector.dart';
 
 class AddCredentialPage extends StatefulWidget {
   const AddCredentialPage({super.key});
@@ -29,7 +33,11 @@ class _AddCredentialPageState extends State<AddCredentialPage> {
 
   bool _isSaving = false;
   bool _showNotes = false;
-  SecurityLevel _securityLevel = SecurityLevel.medium;
+  SecurityLevel? _securityLevel;
+
+  PasswordStrengthResult? _passwordStrength;
+  Timer? _strengthDebounce;
+  final _passwordStrengthService = PasswordStrengthService();
 
   void _save() async {
     if (!_formKey.currentState!.validate()) return;
@@ -44,7 +52,7 @@ class _AddCredentialPageState extends State<AddCredentialPage> {
       notes: _notesController.text.trim().isEmpty
           ? null
           : _notesController.text.trim(),
-      securityLevel: _securityLevel,
+      securityLevel: _securityLevel!,
       createdAt: now,
       updatedAt: now,
     );
@@ -96,27 +104,53 @@ class _AddCredentialPageState extends State<AddCredentialPage> {
                 const SectionTitle(title: 'Password'),
                 const SizedBox(height: 8),
                 PasswordField(
-                  controller: _passwordController,
                   hint: '',
+                  controller: _passwordController,
+                  onChanged: (value) {
+                    _strengthDebounce?.cancel();
+
+                    _strengthDebounce = Timer(
+                      const Duration(milliseconds: 300),
+                      () {
+                        if (value.trim().isEmpty) {
+                          if (!mounted) return;
+                          setState(() => _passwordStrength = null);
+                          return;
+                        }
+
+                        final result = _passwordStrengthService.analyze(value);
+
+                        if (!mounted) return;
+                        setState(() => _passwordStrength = result);
+                      },
+                    );
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Password cannot be empty';
                     }
-                    if (value.length < 8) {
-                      return 'Use at least 8 characters';
-                    }
                     return null;
                   },
+                ),
+                PasswordStrengthIndicator(
+                  result: _passwordStrength,
                 ),
                 const SizedBox(height: 24),
                 const SectionTitle(title: 'Security Level'),
                 const SizedBox(height: 12),
-                SecurityLevelSelector(
-                  value: _securityLevel,
-                  onChanged: (level) {
-                    setState(() => _securityLevel = level);
-                  },
-                ),
+                SecurityLevelFormField(
+                    initialValue: _securityLevel,
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a security level';
+                      }
+                      return null;
+                    },
+                    onChanged: (level) {
+                      setState(() {
+                        _securityLevel = level;
+                      });
+                    }),
                 const SizedBox(height: 24),
                 GestureDetector(
                   onTap: () {
@@ -157,24 +191,9 @@ class _AddCredentialPageState extends State<AddCredentialPage> {
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           height: 52,
-          child: ElevatedButton(
-            onPressed: _isSaving ? null : _save,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: PassaveTheme.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: _isSaving
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text('Save Credential'),
+          child: PassaveButton(
+            text: _isSaving ? 'Saving Credential' : 'Save Credential',
+            onPressed: _isSaving ? () {} : _save,
           ),
         ),
       ),

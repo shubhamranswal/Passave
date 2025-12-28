@@ -3,6 +3,7 @@ import 'package:passave/features/auth/reset_master_password_page.dart';
 
 import '../../core/crypto/recovery_key_storage.dart';
 import '../../core/crypto/vault_session.dart';
+import '../../core/utils/widgets/passave_button.dart';
 import '../../core/utils/widgets/passave_textfield.dart';
 
 class RecoverVaultPage extends StatefulWidget {
@@ -106,15 +107,9 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
         child: SizedBox(
           width: double.infinity,
           height: 52,
-          child: ElevatedButton(
-            onPressed: _loading ? null : _recover,
-            child: _loading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Recover Vault'),
+          child: PassaveButton(
+            onPressed: _loading ? () {} : _recover,
+            text: _loading ? 'Recovering...' : 'Recover Vault',
           ),
         ),
       ),

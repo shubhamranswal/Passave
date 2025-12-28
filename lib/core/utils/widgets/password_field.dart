@@ -7,6 +7,8 @@ class PasswordField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final Iterable<String>? autofillHints;
   final void Function(String)? onFieldSubmitted;
+  final void Function(String)? onChanged;
+  final bool enabled;
 
   const PasswordField({
     super.key,
@@ -16,6 +18,8 @@ class PasswordField extends StatefulWidget {
     this.textInputAction,
     this.autofillHints,
     this.onFieldSubmitted,
+    this.onChanged,
+    this.enabled = true,
   });
 
   @override
@@ -30,9 +34,12 @@ class _PasswordFieldState extends State<PasswordField> {
     return TextFormField(
       controller: widget.controller,
       obscureText: _obscure,
+      enabled: widget.enabled,
       textInputAction: widget.textInputAction,
       autofillHints: widget.autofillHints ?? const [AutofillHints.password],
       validator: widget.validator,
+      onChanged: widget.onChanged,
+      onFieldSubmitted: widget.onFieldSubmitted,
       style: Theme.of(context).textTheme.bodyLarge,
       decoration: InputDecoration(
         hintText: widget.hint,

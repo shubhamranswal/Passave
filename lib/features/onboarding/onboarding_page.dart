@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_button.dart';
 
 import '../../app_entry.dart';
 import '../../core/onboarding/onboarding_service.dart';
@@ -59,14 +60,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
               child: SizedBox(
                 width: double.infinity,
                 height: 52,
-                child: ElevatedButton(
+                child: PassaveButton(
+                  isPrimary: false,
                   onPressed: _index == 2
                       ? _finish
                       : () => _controller.nextPage(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeOut,
                           ),
-                  child: Text(_index == 2 ? 'Get Started' : 'Next'),
+                  text: _index == 2 ? 'Get Started' : 'Next',
                 ),
               ),
             ),

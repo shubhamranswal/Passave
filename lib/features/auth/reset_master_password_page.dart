@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_button.dart';
 import 'package:passave/features/shell/main_shell.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
@@ -137,15 +138,11 @@ class _ResetMasterPasswordPageState extends State<ResetMasterPasswordPage> {
           padding: const EdgeInsets.all(16),
           child: SizedBox(
             height: 52,
-            child: ElevatedButton(
-              onPressed: _loading ? null : _reset,
-              child: _loading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Reset Password'),
+            child: PassaveButton(
+              onPressed: _loading ? () {} : _reset,
+              text: _loading
+                  ? 'Resetting...'
+                  : 'Reset Password',
             ),
           ),
         ),

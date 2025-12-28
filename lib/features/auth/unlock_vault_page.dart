@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_button.dart';
 import 'package:passave/features/auth/recover_vault_page.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
@@ -157,23 +158,20 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
             SizedBox(
               width: double.infinity,
               height: 52,
-              child: ElevatedButton(
-                onPressed: _loading ? null : _unlockVault,
-                child: _loading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Unlock'),
+              child: PassaveButton(
+                onPressed: _loading ? () {} : _unlockVault,
+                text: _loading
+                    ? 'Unlocking...'
+                    : 'Unlock Vault',
               ),
             ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: _loading ? null : _unlockWithBiometrics,
-              child: const Text('Unlock with Biometrics'),
-            ),
-            TextButton(
+            const SizedBox(height: 24),
+            // TextButton(
+            //   onPressed: _loading ? null : _unlockWithBiometrics,
+            //   child: const Text('Unlock with Biometrics'),
+            // ),
+            PassaveButton(
+              isPrimary: false,
               onPressed: () {
                 Navigator.push(
                   context,
@@ -182,10 +180,7 @@ class _UnlockVaultPageState extends State<UnlockVaultPage> {
                   ),
                 );
               },
-              child: const Text(
-                'Forgot master password?',
-                style: TextStyle(decoration: TextDecoration.underline),
-              ),
+              text: 'Forgot master password?',
             ),
           ],
         ),

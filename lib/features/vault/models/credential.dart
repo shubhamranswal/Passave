@@ -1,8 +1,4 @@
-enum SecurityLevel {
-  low,
-  medium,
-  high,
-}
+import 'package:passave/features/vault/models/security_level.dart';
 
 class Credential {
   final String id;

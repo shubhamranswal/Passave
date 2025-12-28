@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/utils/theme/passave_theme.dart';
+import '../../core/utils/widgets/passave_button.dart';
 import 'unlock_vault_page.dart';
 
 class VaultLockedPage extends StatelessWidget {
@@ -9,7 +10,7 @@ class VaultLockedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // 🚫 Block back button
+      onWillPop: () async => false,
       child: Scaffold(
         body: SafeArea(
           child: Center(
@@ -37,7 +38,7 @@ class VaultLockedPage extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     height: 52,
-                    child: ElevatedButton(
+                    child: PassaveButton(
                       onPressed: () async {
                         final unlocked = await Navigator.push<bool>(
                           context,
@@ -46,13 +47,11 @@ class VaultLockedPage extends StatelessWidget {
                             builder: (_) => const UnlockVaultPage(),
                           ),
                         );
-
-                        // 🔓 If unlock succeeded, close the lock overlay
                         if (unlocked == true && context.mounted) {
                           Navigator.pop(context);
                         }
                       },
-                      child: const Text('Unlock Vault'),
+                      text: 'Unlock',
                     ),
                   ),
                 ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passave/core/crypto/recovery_key_service.dart';
+import 'package:passave/core/utils/widgets/passave_button.dart';
 import 'package:passave/core/vault/vault_creation_session.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
@@ -138,15 +139,11 @@ class _CreateVaultPageState extends State<CreateVaultPage> {
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           height: 52,
-          child: ElevatedButton(
-            onPressed: _loading ? null : _createVault,
-            child: _loading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Create Vault'),
+          child: PassaveButton(
+            onPressed: _loading ? () {} : _createVault,
+            text: _loading
+                ? 'Creating Vault'
+                : 'Create Vault',
           ),
         ),
       ),

@@ -1,12 +1,18 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_button.dart';
+import 'package:passave/core/utils/widgets/passave_scaffold.dart';
+import 'package:passave/core/utils/widgets/security_level_form_field.dart';
+
+import '../../core/security/password_strength/password_strength.dart';
 import '../../core/utils/theme/passave_theme.dart';
 import '../../core/utils/widgets/passave_textfield.dart';
 import '../../core/utils/widgets/password_field.dart';
+import '../../core/utils/widgets/section_title.dart';
 import 'models/credential.dart';
+import 'models/security_level.dart';
 import 'repository/vault_provider.dart';
-import 'widgets/section_title.dart';
-import 'widgets/security_level_selector.dart';
 
 class EditCredentialPage extends StatefulWidget {
   final Credential credential;
@@ -28,8 +34,13 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
   late TextEditingController _passwordController;
   late TextEditingController _notesController;
 
-  late SecurityLevel _securityLevel;
+  bool _passwordChanged = false;
   bool _isSaving = false;
+  late SecurityLevel _securityLevel;
+
+  final _passwordStrengthService = PasswordStrengthService();
+  PasswordStrengthResult? _passwordStrength;
+  Timer? _strengthDebounce;
 
   @override
   void initState() {
@@ -51,6 +62,28 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
     _passwordController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onPasswordChanged(String value) async {
+    if (!_passwordChanged && value == widget.credential.password) return;
+    _passwordChanged = true;
+
+    _strengthDebounce?.cancel();
+    _strengthDebounce = Timer(
+      const Duration(milliseconds: 300),
+      () {
+        if (value.trim().isEmpty) {
+          if (!mounted) return;
+          setState(() => _passwordStrength = null);
+          return;
+        }
+
+        final result = _passwordStrengthService.analyze(value);
+
+        if (!mounted) return;
+        setState(() => _passwordStrength = result);
+      },
+    );
   }
 
   Future<void> _saveChanges() async {
@@ -110,17 +143,15 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: PassaveButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      text: 'Cancel',
+                      isPrimary: false,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: PassaveTheme.danger,
-                      ),
+                    child: PassaveButton(
                       onPressed: () async {
                         await vaultRepository.delete(widget.credential.id);
                         if (!mounted) return;
@@ -128,7 +159,7 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
                         Navigator.pop(context);
                         Navigator.pop(context);
                       },
-                      child: const Text('Delete'),
+                      text: 'Delete',
                     ),
                   ),
                 ],
@@ -142,7 +173,7 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PassaveScaffold(
       appBar: AppBar(
         title: const Text('Edit Credential'),
         actions: [
@@ -191,7 +222,7 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
                 const SizedBox(height: 8),
                 PasswordField(
                   controller: _passwordController,
-                  hint: 'Password',
+                  hint: '',
                   textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -199,16 +230,27 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
                     }
                     return null;
                   },
+                  onChanged: _onPasswordChanged,
+                ),
+                PasswordStrengthIndicator(
+                  result: _passwordStrength,
                 ),
                 const SizedBox(height: 24),
                 const SectionTitle(title: 'Security Level'),
                 const SizedBox(height: 12),
-                SecurityLevelSelector(
-                  value: widget.credential.securityLevel,
-                  onChanged: (level) {
-                    setState(() => _securityLevel = level);
-                  },
-                ),
+                SecurityLevelFormField(
+                    initialValue: _securityLevel,
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a security level';
+                      }
+                      return null;
+                    },
+                    onChanged: (level) {
+                      setState(() {
+                        _securityLevel = level;
+                      });
+                    }),
                 const SizedBox(height: 24),
                 const SectionTitle(title: 'Notes'),
                 const SizedBox(height: 8),
@@ -228,30 +270,9 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           height: 52,
-          child: ElevatedButton(
-            onPressed: _isSaving ? null : _saveChanges,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: PassaveTheme.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: _isSaving
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text(
-                    'Save Changes',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+          child: PassaveButton(
+            text: _isSaving ? 'Saving Changes' : 'Save Changes',
+            onPressed: _isSaving ? () {} : _saveChanges,
           ),
         ),
       ),

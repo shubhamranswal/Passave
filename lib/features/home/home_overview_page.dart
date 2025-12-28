@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/security/password_reuse_analyzer.dart';
-import '../../core/security/password_strength.dart';
 import '../vault/models/credential.dart';
+import '../vault/models/security_level.dart';
 import '../vault/repository/vault_provider.dart';
 import '../vault/widgets/vault_item_card.dart';
 
@@ -33,19 +32,40 @@ class _HomeOverviewPageState extends State<HomeOverviewPage> {
           }
 
           final credentials = snapshot.data!;
-          final recent = credentials.take(5).toList();
-          final reused =
-              PasswordReuseAnalyzer.reusedPasswordsCount(credentials);
+          final recent = credentials.toList()
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+          final high = credentials
+              .where((c) => c.securityLevel == SecurityLevel.high)
+              .length;
+          final medium = credentials
+              .where((c) => c.securityLevel == SecurityLevel.medium)
+              .length;
+          final low = credentials
+              .where((c) => c.securityLevel == SecurityLevel.low)
+              .length;
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _VaultSummaryCard(
+              _VaultHealthCard(
                 total: credentials.length,
-                weak: _countWeak(credentials),
-                reused: reused,
+                high: high,
+                medium: medium,
+                low: low,
               ),
               const SizedBox(height: 24),
+              const Text(
+                'Security Distribution',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              _SecurityDistributionBar(
+                high: high,
+                medium: medium,
+                low: low,
+              ),
+              const SizedBox(height: 32),
               const Text(
                 'Recently Added',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
@@ -54,38 +74,36 @@ class _HomeOverviewPageState extends State<HomeOverviewPage> {
               if (recent.isEmpty)
                 const Text('No credentials yet')
               else
-                ...recent.map(
-                  (c) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: VaultItemCard(credential: c),
-                  ),
-                ),
+                ...recent.take(5).map(
+                      (c) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: VaultItemCard(credential: c),
+                      ),
+                    ),
               const SizedBox(height: 32),
-              _SecurityNote(credentials: credentials),
+              _SecurityHint(
+                total: credentials.length,
+                high: high,
+              ),
             ],
           );
         },
       ),
     );
   }
-
-  int _countWeak(List<Credential> creds) {
-    return creds.where((c) {
-      final result = PasswordStrengthAnalyzer.analyze(c.password);
-      return result.strength == PasswordStrength.weak;
-    }).length;
-  }
 }
 
-class _VaultSummaryCard extends StatelessWidget {
+class _VaultHealthCard extends StatelessWidget {
   final int total;
-  final int weak;
-  final int reused;
+  final int high;
+  final int medium;
+  final int low;
 
-  const _VaultSummaryCard({
+  const _VaultHealthCard({
     required this.total,
-    required this.weak,
-    required this.reused,
+    required this.high,
+    required this.medium,
+    required this.low,
   });
 
   @override
@@ -93,17 +111,89 @@ class _VaultSummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
         color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _Stat(label: 'Passwords', value: total.toString()),
-          _Stat(label: 'Weak', value: weak.toString()),
-          _Stat(label: 'Reused', value: reused.toString()),
+          _Stat(label: 'Total', value: total.toString()),
+          _Stat(label: 'High', value: high.toString()),
+          _Stat(label: 'Medium', value: medium.toString()),
+          _Stat(label: 'Low', value: low.toString()),
         ],
       ),
+    );
+  }
+}
+
+class _SecurityDistributionBar extends StatelessWidget {
+  final int high;
+  final int medium;
+  final int low;
+
+  const _SecurityDistributionBar({
+    required this.high,
+    required this.medium,
+    required this.low,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final total = high + medium + low;
+    if (total == 0) return const SizedBox();
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Row(
+        children: [
+          _bar(high, total, Colors.red),
+          _bar(medium, total, Colors.orange),
+          _bar(low, total, Colors.grey),
+        ],
+      ),
+    );
+  }
+
+  Widget _bar(int value, int total, Color color) {
+    return Expanded(
+      flex: value == 0 ? 1 : value,
+      child: Container(
+        height: 12,
+        color: color,
+      ),
+    );
+  }
+}
+
+class _SecurityHint extends StatelessWidget {
+  final int total;
+  final int high;
+
+  const _SecurityHint({
+    required this.total,
+    required this.high,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (total == 0) {
+      return const Text(
+        'Start by adding your first credential.',
+        style: TextStyle(fontWeight: FontWeight.w500),
+      );
+    }
+
+    if (high == 0) {
+      return const Text(
+        'Tip: Mark sensitive accounts as High security.',
+        style: TextStyle(fontWeight: FontWeight.w500),
+      );
+    }
+
+    return const Text(
+      'Your vault is well organized 🔐',
+      style: TextStyle(fontWeight: FontWeight.w500),
     );
   }
 }
@@ -131,39 +221,6 @@ class _Stat extends StatelessWidget {
         const SizedBox(height: 4),
         Text(label),
       ],
-    );
-  }
-}
-
-class _SecurityNote extends StatelessWidget {
-  final List<Credential> credentials;
-
-  const _SecurityNote({required this.credentials});
-
-  @override
-  Widget build(BuildContext context) {
-    if (credentials.isEmpty) return const SizedBox();
-
-    final weak = credentials
-        .where((c) =>
-            PasswordStrengthAnalyzer.analyze(c.password).strength ==
-            PasswordStrength.weak)
-        .length;
-
-    final reused = PasswordReuseAnalyzer.reusedPasswordsCount(credentials);
-
-    if (weak == 0 && reused == 0) {
-      return const Text(
-        'Your vault looks strong 👍',
-        style: TextStyle(fontWeight: FontWeight.w500),
-      );
-    }
-
-    return Text(
-      '${weak > 0 ? '$weak weak' : ''}'
-      '${weak > 0 && reused > 0 ? ', ' : ''}'
-      '${reused > 0 ? '$reused reused' : ''} passwords detected.',
-      style: const TextStyle(fontWeight: FontWeight.w500),
     );
   }
 }

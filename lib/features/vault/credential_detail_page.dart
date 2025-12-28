@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/utils/theme/passave_theme.dart';
+import '../../core/utils/widgets/section_title.dart';
 import 'edit_credential_page.dart';
 import 'models/credential.dart';
-import 'widgets/section_title.dart';
+import 'models/security_level.dart';
 
 class CredentialDetailPage extends StatefulWidget {
   final Credential credential;

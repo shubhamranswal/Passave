@@ -1,12 +1,47 @@
 import 'package:flutter/material.dart';
 
-import '../models/credential.dart';
+import '../../../features/vault/models/security_level.dart';
 
-class SecurityLevelSelector extends StatelessWidget {
-  final SecurityLevel value;
+class SecurityLevelFormField extends FormField<SecurityLevel?> {
+  SecurityLevelFormField({
+    super.key,
+    super.initialValue,
+    super.validator,
+    required ValueChanged<SecurityLevel> onChanged,
+  }) : super(
+          builder: (state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _SecurityLevelSelector(
+                  value: state.value,
+                  onChanged: (level) {
+                    state.didChange(level);
+                    onChanged(level);
+                  },
+                ),
+                if (state.hasError)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      state.errorText!,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
+}
+
+class _SecurityLevelSelector extends StatelessWidget {
+  final SecurityLevel? value;
   final ValueChanged<SecurityLevel> onChanged;
 
-  const SecurityLevelSelector({
+  const _SecurityLevelSelector({
     super.key,
     required this.value,
     required this.onChanged,
@@ -16,8 +51,7 @@ class SecurityLevelSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: SecurityLevel.values.map((level) {
-        final bool isSelected = level == value;
-
+        final bool isSelected = value == level;
         return Padding(
           padding: const EdgeInsets.only(right: 8),
           child: GestureDetector(
