@@ -3,6 +3,7 @@ import 'package:passave/features/auth/reset_master_password_page.dart';
 
 import '../../core/crypto/recovery_key_storage.dart';
 import '../../core/crypto/vault_session.dart';
+import '../../core/utils/widgets/passave_textfield.dart';
 
 class RecoverVaultPage extends StatefulWidget {
   const RecoverVaultPage({super.key});
@@ -12,23 +13,23 @@ class RecoverVaultPage extends StatefulWidget {
 }
 
 class _RecoverVaultPageState extends State<RecoverVaultPage> {
+  final _formKey = GlobalKey<FormState>();
   final _controller = TextEditingController();
-  String? _error;
+
+  String? _submitError;
   bool _loading = false;
 
   Future<void> _recover() async {
+    if (!_formKey.currentState!.validate()) return;
+
     setState(() {
       _loading = true;
-      _error = null;
+      _submitError = null;
     });
 
     try {
       final storedKey = await recoveryKeyStorage.read();
-      if (storedKey == null) {
-        throw Exception('No recovery key found');
-      }
-
-      if (_controller.text.trim() != storedKey) {
+      if (storedKey == null || _controller.text.trim() != storedKey) {
         throw Exception('Invalid recovery key');
       }
 
@@ -41,46 +42,80 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
         ),
       );
     } catch (_) {
-      setState(() => _error = 'Invalid recovery key');
+      setState(() => _submitError = 'Invalid recovery key');
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Recover Vault')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Text(
-              'Enter your recovery key',
-              textAlign: TextAlign.center,
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: ListView(
+              children: [
+                const SizedBox(height: 24),
+                const Text(
+                  'Enter your recovery key',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                PassaveTextField(
+                  controller: _controller,
+                  hint: 'Paste your recovery key here',
+                  icon: Icons.vpn_key,
+                  keyboardType: TextInputType.multiline,
+                  obscureText: false,
+                  maxLines: 3,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Recovery key cannot be empty';
+                    }
+                    return null;
+                  },
+                ),
+                if (_submitError != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    _submitError!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ],
             ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: _controller,
-              maxLines: 3,
-              decoration: const InputDecoration(hintText: 'Recovery Key'),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
-            ],
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: _loading ? null : _recover,
-                child: _loading
-                    ? const CircularProgressIndicator()
-                    : const Text('Recover Vault'),
-              ),
-            ),
-          ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: _loading ? null : _recover,
+            child: _loading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Recover Vault'),
+          ),
         ),
       ),
     );

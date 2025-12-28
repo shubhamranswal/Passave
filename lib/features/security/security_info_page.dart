@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/passave_theme.dart';
+import '../../core/utils/theme/passave_theme.dart';
 
-class SecurityOverviewPage extends StatelessWidget {
-  const SecurityOverviewPage({super.key});
+class SecurityInfoPage extends StatelessWidget {
+  const SecurityInfoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class _SecurityCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: PassaveTheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(

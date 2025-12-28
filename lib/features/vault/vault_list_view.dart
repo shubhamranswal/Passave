@@ -55,7 +55,6 @@ class _VaultListViewState extends State<VaultListView> {
 
             final credentials = snapshot.data!;
 
-            // ✅ EMPTY VAULT HANDLED HERE (correct place)
             if (credentials.isEmpty) {
               return VaultEmptyView(
                 onAdd: _addCredential,

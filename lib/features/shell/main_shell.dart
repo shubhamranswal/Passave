@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../../core/crypto/vault_key_manager_global.dart';
-import '../account/account_page.dart';
-import '../auth/vault_locked_page.dart';
+import '../../core/utils/theme/passave_theme.dart';
+import '../../core/utils/widgets/passave_scaffold.dart';
 import '../home/home_overview_page.dart';
 import '../notifications/notifications_page.dart';
+import '../security/security_page.dart';
 import '../vault/add_credential_page.dart';
 import '../vault/vault_list_view.dart';
 
-enum MainTab {
-  home,
+enum HomeTab {
   vault,
+  overview,
 }
 
 class MainShell extends StatefulWidget {
@@ -21,96 +22,134 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  MainTab _currentTab = MainTab.vault; // TEMP: keep old behavior
+  HomeTab _currentTab = HomeTab.vault;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PassaveScaffold(
       appBar: AppBar(
+        title: const Text('Passave'),
         leading: IconButton(
-          icon: const Icon(Icons.account_circle),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const AccountPage(),
-              ),
-            );
-          },
+          icon: const Icon(Icons.security),
+          onPressed: _onSecurityPressed,
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const NotificationsPage(),
-                ),
-              );
-            },
+            icon: const Icon(Icons.notifications_none),
+            onPressed: _onNotificationPressed,
           ),
         ],
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              // ADD (disabled for now)
-              IconButton(
-                icon: const Icon(Icons.add_circle_outline),
-                iconSize: 32,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AddCredentialPage(),
-                    ),
-                  );
-                },
-              ),
-
-              // HOME (disabled for now)
-              IconButton(
-                icon: const Icon(Icons.home),
-                onPressed: () {
-                  setState(() => _currentTab = MainTab.home);
-                },
-              ),
-
-              // VAULT (active)
-              IconButton(
-                icon: Icon(
-                  Icons.lock,
-                  color: _currentTab == MainTab.vault
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                ),
-                onPressed: _switchToVault,
-              ),
-            ],
+      floatingActionButton: Container(
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: PassaveTheme.primary.withOpacity(0.4),
+              blurRadius: 20,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: ClipOval(
+          child: FloatingActionButton(
+            elevation: 0,
+            backgroundColor: PassaveTheme.primary,
+            onPressed: _onAddPressed,
+            child: const Icon(Icons.add, size: 32),
           ),
         ),
       ),
-      body: _currentTab == MainTab.home
-          ? const HomeOverviewPage()
-          : const VaultListView(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        clipBehavior: Clip.antiAlias,
+        notchMargin: 10,
+        elevation: 12,
+        color: Colors.white,
+        child: SizedBox(
+          height: 72,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _NavIcon(
+                  icon: Icons.list,
+                  active: _currentTab == HomeTab.vault,
+                  onTap: () => _switch(HomeTab.vault),
+                ),
+                _NavIcon(
+                  icon: Icons.shield_outlined,
+                  active: _currentTab == HomeTab.overview,
+                  onTap: () => _switch(HomeTab.overview),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: _buildBody(),
     );
   }
 
-  void _switchToVault() {
-    if (!vaultKeyManagerGlobal.isUnlocked) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const VaultLockedPage(),
-        ),
-      );
-      return;
-    }
+  Widget _buildBody() {
+    return _currentTab == HomeTab.vault
+        ? const VaultListView()
+        : const HomeOverviewPage();
+  }
 
-    setState(() => _currentTab = MainTab.vault);
+  void _switch(HomeTab tab) {
+    if (!vaultKeyManagerGlobal.isUnlocked) return;
+    if (_currentTab == tab) return;
+    setState(() => _currentTab = tab);
+  }
+
+  void _onPressed(Widget page) {
+    if (!vaultKeyManagerGlobal.isUnlocked) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => page,
+      ),
+    );
+  }
+
+  void _onSecurityPressed() {
+    _onPressed(const SecurityPage());
+  }
+
+  void _onNotificationPressed() {
+    _onPressed(const NotificationsPage());
+  }
+
+  void _onAddPressed() {
+    _onPressed(const AddCredentialPage());
+  }
+}
+
+class _NavIcon extends StatelessWidget {
+  final IconData icon;
+  final bool active;
+  final VoidCallback onTap;
+
+  const _NavIcon({
+    required this.icon,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Icon(
+        icon,
+        size: 26,
+        color: active ? PassaveTheme.primary : Colors.grey.shade500,
+      ),
+    );
   }
 }

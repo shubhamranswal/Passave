@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'core/crypto/vault_key_manager_global.dart';
+import 'core/security/vault_lock_listener.dart';
 import 'core/vault/vault_metadata.dart';
 import 'features/auth/create_vault_page.dart';
-import 'features/auth/vault_locked_page.dart';
 import 'features/shell/main_shell.dart';
 
 class AppEntry extends StatelessWidget {
@@ -23,10 +22,9 @@ class AppEntry extends StatelessWidget {
         if (!vaultExists) {
           return const CreateVaultPage();
         }
-        if (!vaultKeyManagerGlobal.isUnlocked) {
-          return const VaultLockedPage();
-        }
-        return const MainShell();
+        return const VaultLockListener(
+          child: MainShell(),
+        );
       },
     );
   }

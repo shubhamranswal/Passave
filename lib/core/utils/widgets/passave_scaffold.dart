@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 
-import '../theme/passave_theme.dart';
-
 class PassaveScaffold extends StatelessWidget {
   final Widget body;
   final PreferredSizeWidget? appBar;
   final Widget? floatingActionButton;
+  final Widget? bottomNavigationBar;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   const PassaveScaffold({
     super.key,
     required this.body,
     this.appBar,
     this.floatingActionButton,
+    this.bottomNavigationBar,
+    this.floatingActionButtonLocation,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: PassaveTheme.background,
       appBar: appBar,
+      body: SafeArea(child: body),
+      bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: body,
-        ),
-      ),
+      floatingActionButtonLocation: floatingActionButtonLocation,
     );
   }
 }

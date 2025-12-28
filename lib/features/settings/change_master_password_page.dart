@@ -4,7 +4,8 @@ import '../../core/crypto/key_derivation_service.dart';
 import '../../core/crypto/vault_key_cache.dart';
 import '../../core/crypto/vault_key_manager_global.dart';
 import '../../core/crypto/vault_verifier.dart';
-import '../vault/widgets/password_field.dart';
+import '../../core/utils/widgets/password_field.dart';
+import '../vault/widgets/section_title.dart';
 
 class ChangeMasterPasswordPage extends StatefulWidget {
   const ChangeMasterPasswordPage({super.key});
@@ -15,27 +16,21 @@ class ChangeMasterPasswordPage extends StatefulWidget {
 }
 
 class _ChangeMasterPasswordPageState extends State<ChangeMasterPasswordPage> {
+  final _formKey = GlobalKey<FormState>();
+
   final _currentController = TextEditingController();
   final _newController = TextEditingController();
   final _confirmController = TextEditingController();
 
-  String? _error;
   bool _loading = false;
+  String? _submitError;
 
   Future<void> _changePassword() async {
-    if (_newController.text.length < 8) {
-      setState(() => _error = 'New password must be at least 8 characters');
-      return;
-    }
-
-    if (_newController.text != _confirmController.text) {
-      setState(() => _error = 'New passwords do not match');
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _loading = true;
-      _error = null;
+      _submitError = null;
     });
 
     try {
@@ -44,7 +39,7 @@ class _ChangeMasterPasswordPageState extends State<ChangeMasterPasswordPage> {
       final currentKey = await kdf.deriveKey(_currentController.text);
 
       if (!await vaultKeyManagerGlobal.matches(currentKey)) {
-        throw Exception('Incorrect current password');
+        throw const FormatException('incorrect-current');
       }
 
       final newKey = await kdf.deriveKey(_newController.text);
@@ -58,13 +53,23 @@ class _ChangeMasterPasswordPageState extends State<ChangeMasterPasswordPage> {
       Navigator.pop(context);
     } catch (e) {
       setState(() {
-        _error = e.toString().contains('Incorrect')
+        _submitError = e is FormatException && e.message == 'incorrect-current'
             ? 'Current password is incorrect'
-            : 'Failed to update password';
+            : 'Failed to update master password';
       });
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
+  }
+
+  @override
+  void dispose() {
+    _currentController.dispose();
+    _newController.dispose();
+    _confirmController.dispose();
+    super.dispose();
   }
 
   @override
@@ -73,40 +78,85 @@ class _ChangeMasterPasswordPageState extends State<ChangeMasterPasswordPage> {
       appBar: AppBar(
         title: const Text('Change Master Password'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            PasswordField(
-              controller: _currentController,
-              label: 'Current Master Password',
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: ListView(
+              children: [
+                const SectionTitle(title: 'Current Password'),
+                const SizedBox(height: 8),
+                PasswordField(
+                  controller: _currentController,
+                  hint: 'Current master password',
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter your current password';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+                const SectionTitle(title: 'New Password'),
+                const SizedBox(height: 8),
+                PasswordField(
+                  controller: _newController,
+                  hint: 'New master password',
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter a new password';
+                    }
+                    if (value.length < 8) {
+                      return 'Use at least 8 characters';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+                const SectionTitle(title: 'Confirm New Password'),
+                const SizedBox(height: 8),
+                PasswordField(
+                  controller: _confirmController,
+                  hint: 'Confirm new password',
+                  textInputAction: TextInputAction.done,
+                  validator: (value) {
+                    if (value != _newController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+                if (_submitError != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    _submitError!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ],
+              ],
             ),
-            const SizedBox(height: 16),
-            PasswordField(
-              controller: _newController,
-              label: 'New Master Password',
-            ),
-            const SizedBox(height: 16),
-            PasswordField(
-              controller: _confirmController,
-              label: 'Confirm New Master Password',
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
-            ],
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: _loading ? null : _changePassword,
-                child: _loading
-                    ? const CircularProgressIndicator()
-                    : const Text('Update Password'),
-              ),
-            ),
-          ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SizedBox(
+          height: 52,
+          child: ElevatedButton(
+            onPressed: _loading ? null : _changePassword,
+            child: _loading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Update Password'),
+          ),
         ),
       ),
     );

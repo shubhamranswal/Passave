@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passave/features/vault/models/credential.dart';
 
-import '../../../core/theme/passave_theme.dart';
 import '../credential_detail_page.dart';
 
 class VaultItemCard extends StatelessWidget {
@@ -27,7 +26,7 @@ class VaultItemCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: PassaveTheme.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -36,7 +35,7 @@ class VaultItemCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: PassaveTheme.divider,
+                color: Theme.of(context).dividerColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.language),
@@ -58,9 +57,9 @@ class VaultItemCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
-              color: PassaveTheme.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),

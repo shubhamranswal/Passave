@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:passave/app_entry.dart';
 
 import 'core/onboarding/onboarding_service.dart';
+import 'core/utils/theme/passave_theme.dart';
 import 'features/onboarding/onboarding_page.dart';
 
 class PassaveApp extends StatelessWidget {
@@ -11,6 +12,9 @@ class PassaveApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Passave',
+      theme: PassaveTheme.lightTheme,
+      darkTheme: PassaveTheme.darkTheme,
+      themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<bool>(
         future: onboardingService.isCompleted(),

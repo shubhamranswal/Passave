@@ -3,9 +3,9 @@ import 'package:passave/core/crypto/recovery_key_service.dart';
 import 'package:passave/core/vault/vault_creation_session.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
-import '../../core/theme/passave_theme.dart';
+import '../../core/utils/theme/passave_theme.dart';
+import '../../core/utils/widgets/password_field.dart';
 import '../recovery/confirm_recovery_key_page.dart';
-import '../vault/widgets/password_field.dart';
 
 class CreateVaultPage extends StatefulWidget {
   const CreateVaultPage({super.key});
@@ -15,26 +15,20 @@ class CreateVaultPage extends StatefulWidget {
 }
 
 class _CreateVaultPageState extends State<CreateVaultPage> {
+  final _formKey = GlobalKey<FormState>();
+
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
 
   bool _loading = false;
-  String? _error;
+  String? _submitError;
 
   Future<void> _createVault() async {
-    if (_passwordController.text.length < 8) {
-      setState(() => _error = 'Password must be at least 8 characters');
-      return;
-    }
-
-    if (_passwordController.text != _confirmController.text) {
-      setState(() => _error = 'Passwords do not match');
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _loading = true;
-      _error = null;
+      _submitError = null;
     });
 
     try {
@@ -50,7 +44,6 @@ class _CreateVaultPageState extends State<CreateVaultPage> {
       );
 
       if (!mounted) return;
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -58,59 +51,102 @@ class _CreateVaultPageState extends State<CreateVaultPage> {
         ),
       );
     } catch (_) {
-      setState(() => _error = 'Failed to create vault');
+      setState(() => _submitError = 'Failed to create vault');
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.lock_outline,
-                  size: 64, color: PassaveTheme.primary),
-              const SizedBox(height: 24),
-              Text(
-                'Create Your Vault',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'This password encrypts all your data.\nWe cannot recover it for you.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              PasswordField(
-                controller: _passwordController,
-                label: 'New Master Password',
-              ),
-              const SizedBox(height: 16),
-              PasswordField(
-                controller: _confirmController,
-                label: 'Confirm New Master Password',
-              ),
-              if (_error != null) ...[
-                const SizedBox(height: 12),
-                Text(_error!, style: const TextStyle(color: Colors.red)),
-              ],
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: _loading ? null : _createVault,
-                  child: _loading
-                      ? const CircularProgressIndicator()
-                      : const Text('Create Vault'),
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: ListView(
+              children: [
+                const Icon(
+                  Icons.lock_outline,
+                  size: 64,
+                  color: PassaveTheme.primary,
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                Text(
+                  'Create Your Vault',
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'This password encrypts all your data.\nWe cannot recover it for you.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                PasswordField(
+                  controller: _passwordController,
+                  hint: 'New master password',
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter a master password';
+                    }
+                    if (value.length < 8) {
+                      return 'Use at least 8 characters';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                PasswordField(
+                  controller: _confirmController,
+                  hint: 'Confirm master password',
+                  textInputAction: TextInputAction.done,
+                  validator: (value) {
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+                if (_submitError != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    _submitError!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SizedBox(
+          height: 52,
+          child: ElevatedButton(
+            onPressed: _loading ? null : _createVault,
+            child: _loading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Create Vault'),
           ),
         ),
       ),

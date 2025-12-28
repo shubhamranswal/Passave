@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/passave_theme.dart';
-
 class PassaveTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
   final IconData icon;
+
   final bool obscureText;
   final Widget? suffixIcon;
   final TextInputType keyboardType;
+  final TextInputAction? textInputAction;
+  final int maxLines;
+  final String? Function(String?)? validator;
+  final Iterable<String>? autofillHints;
+  final void Function(String)? onFieldSubmitted;
 
   const PassaveTextField({
     super.key,
@@ -18,30 +22,41 @@ class PassaveTextField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.keyboardType = TextInputType.text,
+    this.textInputAction,
+    this.maxLines = 1,
+    this.validator,
+    this.autofillHints,
+    this.onFieldSubmitted,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      maxLines: maxLines,
+      autofillHints: autofillHints,
+      validator: validator,
+      onFieldSubmitted: onFieldSubmitted,
       style: Theme.of(context).textTheme.bodyLarge,
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: Icon(
           icon,
-          color: PassaveTheme.textSecondary,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: PassaveTheme.surface,
+        fillColor: Theme.of(context).colorScheme.surface,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
+        errorMaxLines: 2,
       ),
     );
   }

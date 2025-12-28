@@ -7,7 +7,7 @@ import '../../core/crypto/vault_key_cache.dart';
 import '../../core/crypto/vault_key_manager_global.dart';
 import '../../core/crypto/vault_verifier.dart';
 import '../../core/security/biometric_service.dart';
-import '../../core/theme/passave_theme.dart';
+import '../../core/utils/theme/passave_theme.dart';
 import '../../core/vault/vault_creation_session.dart';
 import '../../features/shell/main_shell.dart';
 

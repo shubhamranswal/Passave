@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/passave_theme.dart';
+import '../../core/utils/theme/passave_theme.dart';
 
 class VaultEmptyView extends StatelessWidget {
   final VoidCallback onAdd;
@@ -23,13 +23,13 @@ class VaultEmptyView extends StatelessWidget {
                 width: 88,
                 height: 88,
                 decoration: BoxDecoration(
-                  color: PassaveTheme.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.vpn_key_off,
                   size: 36,
-                  color: PassaveTheme.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 24),
