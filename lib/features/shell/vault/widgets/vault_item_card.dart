@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:passave/features/vault/models/credential.dart';
 
 import '../credential_detail_page.dart';
+import '../models/credential.dart';
 
 class VaultItemCard extends StatelessWidget {
   final Credential credential;

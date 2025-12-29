@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 
-import '../../../core/crypto/vault/vault_metadata.dart';
-import '../../../core/crypto/vault_key_manager.dart';
+import '../../../../core/crypto/vault/vault_metadata.dart';
+import '../../../../core/crypto/vault_key_manager.dart';
 import '../models/credential.dart';
 import '../models/security_level.dart';
 import 'vault_repository.dart';

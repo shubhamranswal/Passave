@@ -5,11 +5,11 @@ import 'package:passave/core/utils/widgets/passave_button.dart';
 import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 import 'package:passave/core/utils/widgets/security_level_form_field.dart';
 
-import '../../core/security/password_strength/password_strength.dart';
-import '../../core/utils/theme/passave_theme.dart';
-import '../../core/utils/widgets/passave_textfield.dart';
-import '../../core/utils/widgets/password_field.dart';
-import '../../core/utils/widgets/section_title.dart';
+import '../../../core/security/password_strength/password_strength.dart';
+import '../../../core/utils/theme/passave_theme.dart';
+import '../../../core/utils/widgets/passave_textfield.dart';
+import '../../../core/utils/widgets/password_field.dart';
+import '../../../core/utils/widgets/section_title.dart';
 import 'models/credential.dart';
 import 'models/security_level.dart';
 import 'repository/vault_provider.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 
-import '../../core/utils/theme/passave_theme.dart';
+import '../../../core/utils/theme/passave_theme.dart';
 
 class VaultEmptyView extends StatelessWidget {
   final VoidCallback onAdd;
@@ -12,7 +13,7 @@ class VaultEmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PassaveScaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/utils/theme/passave_theme.dart';
+import '../../../core/utils/theme/passave_theme.dart';
 
 class SecurityInfoPage extends StatelessWidget {
   const SecurityInfoPage({super.key});
@@ -15,7 +15,7 @@ class SecurityInfoPage extends StatelessWidget {
           children: [
             _IntroCard(),
             const SizedBox(height: 24),
-            _SectionTitle('Core Protection'),
+            const _SectionTitle('Core Protection'),
             const SizedBox(height: 12),
             const _SecurityCard(
               icon: Icons.lock_outline,

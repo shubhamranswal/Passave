@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/utils/theme/passave_theme.dart';
-import '../../core/utils/widgets/passave_scaffold.dart';
+import '../../../core/utils/theme/passave_theme.dart';
+import '../../../core/utils/widgets/passave_scaffold.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});

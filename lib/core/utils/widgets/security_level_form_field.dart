@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../features/vault/models/security_level.dart';
+import '../../../features/shell/vault/models/security_level.dart';
 
 class SecurityLevelFormField extends FormField<SecurityLevel?> {
   SecurityLevelFormField({
@@ -42,7 +42,6 @@ class _SecurityLevelSelector extends StatelessWidget {
   final ValueChanged<SecurityLevel> onChanged;
 
   const _SecurityLevelSelector({
-    super.key,
     required this.value,
     required this.onChanged,
   });

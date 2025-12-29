@@ -1,5 +1,5 @@
-import '../../features/vault/models/credential.dart';
-import '../../features/vault/models/security_level.dart';
+import '../../features/shell/vault/models/credential.dart';
+import '../../features/shell/vault/models/security_level.dart';
 
 class VaultScore {
   final int score;

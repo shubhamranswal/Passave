@@ -1,8 +1,11 @@
-import '../../../core/crypto/encryption/encryption_service.dart';
+import 'package:flutter/cupertino.dart';
+
+import '../../../../core/crypto/encryption/encryption_service.dart';
 import '../models/credential.dart';
 import 'vault_repository.dart';
 
-class EncryptedVaultRepository implements VaultRepository {
+class EncryptedVaultRepository extends ChangeNotifier
+    implements VaultRepository {
   final VaultRepository _inner;
   final EncryptionService _crypto;
 
@@ -25,25 +28,27 @@ class EncryptedVaultRepository implements VaultRepository {
   Future<void> add(Credential credential) async {
     final encrypted = await _encryptCredential(credential);
     await _inner.add(encrypted);
+    notifyListeners();
   }
 
   @override
   Future<void> update(Credential credential) async {
     final encrypted = await _encryptCredential(credential);
     await _inner.update(encrypted);
+    notifyListeners();
   }
 
   @override
   Future<void> delete(String id) async {
     await _inner.delete(id);
+    notifyListeners();
   }
 
   @override
   Future<void> clear() async {
     await _inner.clear();
+    notifyListeners();
   }
-
-  // ---------- helpers ----------
 
   Future<Credential> _encryptCredential(Credential c) async {
     return c.copyWith(

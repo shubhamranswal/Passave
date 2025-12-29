@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:passave/features/shell/account/settings/auto_lock_settings_page.dart';
+import 'package:passave/features/shell/account/settings/change_master_password_page.dart';
 
-import '../../core/crypto/vault/vault_controller.dart';
-import '../../core/crypto/vault_key_cache.dart';
-import '../../core/security/biometric_service.dart';
-import '../../core/utils/widgets/passave_scaffold.dart';
-import '../settings/auto_lock_settings_page.dart';
-import '../settings/change_master_password_page.dart';
+import '../../../core/crypto/vault/vault_controller.dart';
+import '../../../core/crypto/vault_key_cache.dart';
+import '../../../core/security/biometric_service.dart';
+import '../../../core/utils/widgets/passave_scaffold.dart';
 import 'security_info_page.dart';
 import 'widgets/security_status_tile.dart';
 

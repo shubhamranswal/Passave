@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:passave/core/crypto/vault/vault_controller.dart';
 import 'package:passave/core/utils/widgets/passave_button.dart';
 
-import '../../core/crypto/key_derivation_service.dart';
-import '../../core/crypto/vault_key_cache.dart';
-import '../../core/crypto/vault_key_manager.dart';
-import '../../core/crypto/vault_verifier.dart';
-import '../../core/utils/widgets/password_field.dart';
-import '../../core/utils/widgets/section_title.dart';
+import '../../../../core/crypto/key_derivation_service.dart';
+import '../../../../core/crypto/vault_key_cache.dart';
+import '../../../../core/crypto/vault_key_manager.dart';
+import '../../../../core/crypto/vault_verifier.dart';
+import '../../../../core/utils/widgets/password_field.dart';
+import '../../../../core/utils/widgets/section_title.dart';
 
 class ChangeMasterPasswordPage extends StatefulWidget {
   const ChangeMasterPasswordPage({super.key});

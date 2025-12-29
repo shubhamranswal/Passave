@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:passave/core/crypto/vault/vault_controller.dart';
-import 'package:passave/features/account/account_page.dart';
 import 'package:passave/features/auth/vault_locked_page.dart';
+import 'package:passave/features/shell/vault/add_credential_page.dart';
+import 'package:passave/features/shell/vault/vault_list_view.dart';
 
 import '../../core/utils/theme/passave_theme.dart';
 import '../../core/utils/widgets/passave_scaffold.dart';
-import '../home/home_overview_page.dart';
-import '../notifications/notifications_page.dart';
-import '../vault/add_credential_page.dart';
-import '../vault/vault_list_view.dart';
+import 'account/account_page.dart';
+import 'home/home_overview_page.dart';
+import 'notifications/notifications_page.dart';
 
 enum HomeTab {
   vault,

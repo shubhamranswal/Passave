@@ -1,4 +1,4 @@
-import 'package:passave/features/vault/models/security_level.dart';
+import 'package:passave/features/shell/vault/models/security_level.dart';
 
 class Credential {
   final String id;

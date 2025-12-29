@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../vault/models/credential.dart';
 import '../../vault/models/security_level.dart';
+import '../../vault/vault_list_view.dart';
 
 class VaultHealthCard extends StatelessWidget {
   final List<Credential> credentials;
@@ -40,9 +41,10 @@ class VaultHealthCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _stat('Total', total.toString()),
-              _dotStat('High', high, Colors.red),
-              _dotStat('Medium', medium, Colors.orange),
-              _dotStat('Low', low, Colors.grey),
+              _dotStat(context, SecurityLevel.low, 'Low', low, Colors.green),
+              _dotStat(context, SecurityLevel.medium, 'Medium', medium,
+                  Colors.orange),
+              _dotStat(context, SecurityLevel.high, 'High', high, Colors.red),
             ],
           ),
         ],
@@ -66,29 +68,39 @@ class VaultHealthCard extends StatelessWidget {
     );
   }
 
-  Widget _dotStat(String label, int value, Color color) {
-    return Column(
-      children: [
-        Row(
+  Widget _dotStat(BuildContext context, SecurityLevel level, String label,
+      int value, Color color) {
+    return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => VaultListView(filter: level),
+            ),
+          );
+        },
+        child: Column(
           children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+            Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  value.toString(),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
-            const SizedBox(width: 6),
-            Text(
-              value.toString(),
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
+            const SizedBox(height: 4),
+            Text(label),
           ],
-        ),
-        const SizedBox(height: 4),
-        Text(label),
-      ],
-    );
+        ));
   }
 }

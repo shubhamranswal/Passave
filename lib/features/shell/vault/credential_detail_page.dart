@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 
-import '../../core/utils/theme/passave_theme.dart';
-import '../../core/utils/widgets/section_title.dart';
+import '../../../core/utils/theme/passave_theme.dart';
+import '../../../core/utils/widgets/section_title.dart';
 import 'edit_credential_page.dart';
 import 'models/credential.dart';
 import 'models/security_level.dart';
@@ -36,7 +37,7 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
   Widget build(BuildContext context) {
     final credential = widget.credential;
 
-    return Scaffold(
+    return PassaveScaffold(
       appBar: AppBar(
         title: const Text('Credential'),
         actions: [
