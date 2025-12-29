@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:passave/core/utils/widgets/passave_button.dart';
+import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 import 'package:passave/features/shell/main_shell.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
+import '../../core/crypto/vault/vault_controller.dart';
 import '../../core/crypto/vault_key_cache.dart';
-import '../../core/crypto/vault_key_manager_global.dart';
-import '../../core/crypto/vault_session.dart';
+import '../../core/crypto/vault_key_manager.dart';
 import '../../core/crypto/vault_verifier.dart';
 import '../../core/utils/theme/passave_theme.dart';
 import '../../core/utils/widgets/password_field.dart';
@@ -29,33 +30,30 @@ class _ResetMasterPasswordPageState extends State<ResetMasterPasswordPage> {
 
   Future<void> _reset() async {
     if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      _loading = true;
-      _submitError = null;
-    });
+    setState(() => _loading = true);
 
     try {
-      final kdf = KeyDerivationService();
-      final newKey = await kdf.deriveKey(_passwordController.text);
+      final newKey =
+          await KeyDerivationService().deriveKey(_passwordController.text);
+
+      await vaultVerifier.initialize(newKey);
+      vaultKeyManagerGlobal.lock();
+      await vaultKeyCache.clear();
 
       await vaultKeyManagerGlobal.unlock(newKey);
-      await vaultVerifier.initialize(newKey);
-      await vaultKeyCache.clear();
       await vaultKeyCache.store(newKey);
-      vaultSession.exitRecovery();
+      vaultController.exitRecovery();
 
       if (!mounted) return;
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const MainShell()),
+        (_) => false,
       );
     } catch (_) {
       setState(() => _submitError = 'Failed to reset password');
     } finally {
-      if (mounted) {
-        setState(() => _loading = false);
-      }
+      setState(() => _loading = false);
     }
   }
 
@@ -68,9 +66,16 @@ class _ResetMasterPasswordPageState extends State<ResetMasterPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
+    if (vaultController.status != VaultStatus.recovery) {
+      return const PassaveScaffold(
+        body: Center(
+          child: Text('Invalid recovery session! Restart App!'),
+        ),
+      );
+    }
+    return PopScope(
+      canPop: false,
+      child: PassaveScaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Reset Master Password'),

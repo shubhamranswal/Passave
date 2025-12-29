@@ -10,7 +10,6 @@ class VaultVerifier {
   final _storage = const FlutterSecureStorage();
   final _cipher = AesGcm.with256bits();
 
-  /// Called ONLY when creating or resetting the vault
   Future<void> initialize(SecretKey key) async {
     final secretBox = await _cipher.encrypt(
       utf8.encode(_magic),
@@ -18,14 +17,12 @@ class VaultVerifier {
     );
 
     final encoded = base64Encode(secretBox.concatenation());
-
     await _storage.write(
       key: _storageKey,
       value: encoded,
     );
   }
 
-  /// Called during unlock to verify master password
   Future<bool> verify(SecretKey key) async {
     final encoded = await _storage.read(key: _storageKey);
     if (encoded == null) return false;

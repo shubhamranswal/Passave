@@ -6,8 +6,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class KeyDerivationService {
   static const _saltKey = 'vault_salt';
-  static const _iterations = 200000; // strong but mobile-safe
-  static const _keyLength = 32; // 256-bit key
+  static const _iterations = 200000;
+  static const _keyLength = 32;
   static const _recoveryKeyHashKey = 'recovery_key_hash';
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();

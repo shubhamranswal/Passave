@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/security/auto_lock_preferences.dart';
-import '../../core/security/auto_lock_service.dart';
-import '../../core/security/auto_lock_timeout.dart';
+import '../../core/security/auto_lock/auto_lock_preferences.dart';
+import '../../core/security/auto_lock/auto_lock_service.dart';
+import '../../core/security/auto_lock/auto_lock_timeout.dart';
 
 class AutoLockSettingsPage extends StatefulWidget {
   const AutoLockSettingsPage({super.key});

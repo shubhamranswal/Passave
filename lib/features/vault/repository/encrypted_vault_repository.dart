@@ -1,4 +1,4 @@
-import '../../../core/crypto/encryption_service.dart';
+import '../../../core/crypto/encryption/encryption_service.dart';
 import '../models/credential.dart';
 import 'vault_repository.dart';
 

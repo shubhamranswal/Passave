@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:passave/features/auth/recover_vault_page.dart';
 
-import 'core/security/vault_lock_listener.dart';
-import 'core/vault/vault_metadata.dart';
+import 'core/crypto/vault/vault_controller.dart';
+import 'core/crypto/vault/vault_metadata.dart';
 import 'features/auth/create_vault_page.dart';
+import 'features/auth/vault_locked_page.dart';
 import 'features/shell/main_shell.dart';
 
 class AppEntry extends StatelessWidget {
@@ -18,12 +20,21 @@ class AppEntry extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        final vaultExists = snapshot.data ?? false;
-        if (!vaultExists) {
+        if (!snapshot.data!) {
           return const CreateVaultPage();
         }
-        return const VaultLockListener(
-          child: MainShell(),
+        return AnimatedBuilder(
+          animation: vaultController,
+          builder: (_, __) {
+            switch (vaultController.status) {
+              case VaultStatus.unlocked:
+                return const MainShell();
+              case VaultStatus.locked:
+                return const VaultLockedPage();
+              case VaultStatus.recovery:
+                return const RecoverVaultPage();
+            }
+          },
         );
       },
     );

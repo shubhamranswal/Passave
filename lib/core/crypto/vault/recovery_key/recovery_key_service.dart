@@ -25,12 +25,12 @@ class RecoveryKeyService {
     );
   }
 
-  Future<String?> read() async {
+  Future<String?> _read() async {
     return await _secureStorage.read(key: _storageKey);
   }
 
   Future<bool> verify(String input) async {
-    final stored = await read();
+    final stored = await _read();
     if (stored == null) return false;
 
     return input.trim() == stored;
@@ -38,10 +38,6 @@ class RecoveryKeyService {
 
   Future<void> clear() async {
     await _secureStorage.delete(key: _storageKey);
-  }
-
-  Future<bool> exists() async {
-    return (await read()) != null;
   }
 }
 

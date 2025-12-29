@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 import 'package:passave/features/auth/reset_master_password_page.dart';
 
-import '../../core/crypto/recovery_key_storage.dart';
-import '../../core/crypto/vault_session.dart';
+import '../../core/crypto/vault/vault_controller.dart';
 import '../../core/utils/widgets/passave_button.dart';
 import '../../core/utils/widgets/passave_textfield.dart';
 
@@ -28,13 +28,11 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
       _submitError = null;
     });
 
-    try {
-      final storedKey = await recoveryKeyStorage.read();
-      if (storedKey == null || _controller.text.trim() != storedKey) {
-        throw Exception('Invalid recovery key');
-      }
-
-      vaultSession.enterRecovery();
+    final ok =
+        await vaultController.unlockWithRecoveryKey(_controller.text.trim());
+    if (!ok) {
+      setState(() => _submitError = 'Invalid recovery key');
+    } else {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -42,11 +40,9 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
           builder: (_) => const ResetMasterPasswordPage(),
         ),
       );
-    } catch (_) {
-      setState(() => _submitError = 'Invalid recovery key');
-    } finally {
-      if (mounted) setState(() => _loading = false);
     }
+
+    if (mounted) setState(() => _loading = false);
   }
 
   @override
@@ -57,7 +53,7 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PassaveScaffold(
       appBar: AppBar(title: const Text('Recover Vault')),
       body: SafeArea(
         child: Form(

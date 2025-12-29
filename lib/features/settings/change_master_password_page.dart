@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/crypto/vault/vault_controller.dart';
 import 'package:passave/core/utils/widgets/passave_button.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
 import '../../core/crypto/vault_key_cache.dart';
-import '../../core/crypto/vault_key_manager_global.dart';
+import '../../core/crypto/vault_key_manager.dart';
 import '../../core/crypto/vault_verifier.dart';
 import '../../core/utils/widgets/password_field.dart';
 import '../../core/utils/widgets/section_title.dart';
@@ -36,19 +37,17 @@ class _ChangeMasterPasswordPageState extends State<ChangeMasterPasswordPage> {
 
     try {
       final kdf = KeyDerivationService();
-
       final currentKey = await kdf.deriveKey(_currentController.text);
-
-      if (!await vaultKeyManagerGlobal.matches(currentKey)) {
+      final valid = await vaultVerifier.verify(currentKey);
+      if (!valid) {
         throw const FormatException('incorrect-current');
       }
-
       final newKey = await kdf.deriveKey(_newController.text);
-
-      await vaultKeyManagerGlobal.unlock(newKey);
       await vaultVerifier.initialize(newKey);
+      await vaultKeyManagerGlobal.unlock(newKey);
       await vaultKeyCache.clear();
       await vaultKeyCache.store(newKey);
+      vaultController.exitRecovery();
 
       if (!mounted) return;
       Navigator.pop(context);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:passave/core/crypto/recovery_key_service.dart';
+import 'package:passave/core/crypto/vault/recovery_key/recovery_key_service.dart';
+import 'package:passave/core/crypto/vault/vault_creation_session.dart';
 import 'package:passave/core/utils/widgets/passave_button.dart';
-import 'package:passave/core/vault/vault_creation_session.dart';
 
 import '../../core/crypto/key_derivation_service.dart';
 import '../../core/utils/theme/passave_theme.dart';

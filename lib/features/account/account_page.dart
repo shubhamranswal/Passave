@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/crypto/vault/vault_controller.dart';
 import '../../core/crypto/vault_key_cache.dart';
-import '../../core/crypto/vault_key_manager_global.dart';
-import '../../core/crypto/vault_session.dart';
 import '../../core/security/biometric_service.dart';
 import '../../core/utils/widgets/passave_scaffold.dart';
 import '../settings/auto_lock_settings_page.dart';
@@ -14,14 +13,13 @@ class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
 
   void _lockVault(BuildContext context) {
-    vaultKeyManagerGlobal.lock();
-    vaultSession.lock();
+    vaultController.lock(reason: 'manual');
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final vaultUnlocked =
-        vaultKeyManagerGlobal.isUnlocked && !vaultSession.isLocked;
+    final vaultUnlocked = vaultController.status == VaultStatus.unlocked;
 
     return PassaveScaffold(
         appBar: AppBar(title: const Text('Account')),
@@ -123,15 +121,15 @@ class AccountPage extends StatelessWidget {
                     );
                   },
                 ),
-                const SizedBox(height: 32),
-                Center(
-                  child: Text(
-                    'Passave · Local-only vault',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  ),
+              ]),
+              const SizedBox(height: 32),
+              Center(
+                child: Text(
+                  'Passave · Local-only vault',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
-              ])
+              ),
             ],
           ),
         ));

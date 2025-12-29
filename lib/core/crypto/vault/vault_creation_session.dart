@@ -10,7 +10,7 @@ class VaultCreationSession {
     required SecretKey key,
     required String recoveryKey,
   }) {
-    this.vaultKey = key;
+    vaultKey = key;
     this.recoveryKey = recoveryKey;
   }
 

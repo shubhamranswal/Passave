@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 
 import '../../core/utils/theme/passave_theme.dart';
 import '../../core/utils/widgets/passave_button.dart';
@@ -9,9 +10,9 @@ class VaultLockedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
+    return PopScope(
+      canPop: false,
+      child: PassaveScaffold(
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -40,16 +41,12 @@ class VaultLockedPage extends StatelessWidget {
                     height: 52,
                     child: PassaveButton(
                       onPressed: () async {
-                        final unlocked = await Navigator.push<bool>(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            fullscreenDialog: true,
                             builder: (_) => const UnlockVaultPage(),
                           ),
                         );
-                        if (unlocked == true && context.mounted) {
-                          Navigator.pop(context);
-                        }
                       },
                       text: 'Unlock',
                     ),

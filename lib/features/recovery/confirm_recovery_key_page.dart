@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passave/core/crypto/vault/vault_metadata.dart';
 import 'package:passave/core/utils/widgets/passave_button.dart';
-import 'package:passave/core/vault/vault_metadata.dart';
 
-import '../../core/crypto/recovery_key_storage.dart';
+import '../../core/crypto/vault/recovery_key/recovery_key_service.dart';
+import '../../core/crypto/vault/vault_creation_session.dart';
 import '../../core/crypto/vault_key_cache.dart';
-import '../../core/crypto/vault_key_manager_global.dart';
+import '../../core/crypto/vault_key_manager.dart';
 import '../../core/crypto/vault_verifier.dart';
 import '../../core/security/biometric_service.dart';
 import '../../core/utils/theme/passave_theme.dart';
-import '../../core/vault/vault_creation_session.dart';
 import '../../features/shell/main_shell.dart';
 
 class ConfirmRecoveryKeyPage extends StatefulWidget {
@@ -38,37 +38,37 @@ class _ConfirmRecoveryKeyPageState extends State<ConfirmRecoveryKeyPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (!_confirmed &&
-        (state == AppLifecycleState.inactive ||
-            state == AppLifecycleState.detached)) {
+        (state == AppLifecycleState.paused ||
+            state == AppLifecycleState.inactive)) {
       _abortCreation();
     }
   }
 
-  void _abortCreation() async {
+  Future<void> _abortCreation() async {
     vaultCreationSession.clear();
-    await recoveryKeyStorage.clear();
+    await recoveryKeyService.clear();
     await vaultKeyCache.clear();
     await vaultMetadata.clear();
   }
 
   Future<void> _finalizeVault() async {
     final session = vaultCreationSession;
-    if (!session.isActive) return;
+    if (!session.isActive || session.recoveryKey == null) return;
 
     final key = session.vaultKey!;
     final recoveryKey = session.recoveryKey!;
 
     await vaultVerifier.initialize(key);
     await vaultKeyManagerGlobal.unlock(key);
-    await vaultKeyCache.clear();
     await vaultKeyCache.store(key);
-    await biometricService.enable();
-    await recoveryKeyStorage.store(recoveryKey);
+
+    await recoveryKeyService.store(recoveryKey);
     await vaultMetadata.markExists();
+
+    await biometricService.enable();
     session.clear();
 
     if (!mounted) return;
-
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
@@ -82,10 +82,10 @@ class _ConfirmRecoveryKeyPageState extends State<ConfirmRecoveryKeyPage>
   Widget build(BuildContext context) {
     final recoveryKey = vaultCreationSession.recoveryKey!;
 
-    return WillPopScope(
-      onWillPop: () async {
-        _abortCreation();
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, __) async {
+        await _abortCreation();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -145,8 +145,8 @@ class _ConfirmRecoveryKeyPageState extends State<ConfirmRecoveryKeyPage>
                 width: double.infinity,
                 height: 52,
                 child: PassaveButton(
-                  loading: !_confirmed,
-                  onPressed: _finalizeVault,
+                  loading: false,
+                  onPressed: _confirmed ? _finalizeVault : null,
                   text: 'Continue',
                 ),
               ),

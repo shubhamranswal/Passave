@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:cryptography/cryptography.dart';
 
-import 'vault_key_manager.dart';
+import '../vault_key_manager.dart';
 
 class EncryptionService {
   final VaultKeyManager _keyManager;
