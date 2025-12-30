@@ -108,7 +108,10 @@ class _HomeOverviewPageState extends State<HomeOverviewPage> {
                   ...recent.take(5).map(
                         (c) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: VaultItemCard(credential: c),
+                          child: VaultItemCard(
+                            credential: c,
+                            query: "",
+                          ),
                         ),
                       ),
                   const SizedBox(height: 18),
