@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 
-import '../../../core/utils/theme/passave_theme.dart';
 import '../../../core/utils/widgets/section_title.dart';
 import 'edit_credential_page.dart';
 import 'models/credential.dart';
@@ -84,6 +83,14 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
                 },
                 onCopy: () => _copyToClipboard(credential.password, 'Password'),
               ),
+              const SizedBox(height: 24),
+              if (credential.notes != null) ...[
+                const SectionTitle(title: 'Notes'),
+                const SizedBox(height: 8),
+                _MetaText(
+                  text: '${credential.notes}',
+                ),
+              ],
               const SizedBox(height: 24),
               const SectionTitle(title: 'Security Level'),
               const SizedBox(height: 12),
@@ -236,17 +243,26 @@ class _SecurityLevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: PassaveTheme.primary,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        level.name.toUpperCase(),
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        child: Text(
+          level.name.toUpperCase(),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
         ),
       ),
     );
