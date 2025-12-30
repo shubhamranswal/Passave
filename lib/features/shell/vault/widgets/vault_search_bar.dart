@@ -27,6 +27,9 @@ class _VaultSearchBarState extends State<VaultSearchBar> {
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
+      textInputAction: TextInputAction.search,
+      keyboardType: TextInputType.text,
+      onSubmitted: (_) => FocusScope.of(context).unfocus(),
       onChanged: widget.onChanged,
       style: Theme.of(context).textTheme.bodyLarge,
       decoration: InputDecoration(
@@ -38,7 +41,6 @@ class _VaultSearchBarState extends State<VaultSearchBar> {
                 onPressed: () {
                   _controller.clear();
                   widget.onChanged('');
-                  setState(() {});
                 },
                 icon: const Icon(Icons.close),
               ),
