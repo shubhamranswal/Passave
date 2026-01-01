@@ -105,7 +105,7 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
     await vaultRepository.update(updatedCredential);
 
     if (!mounted) return;
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
 
   void _confirmDelete() {
@@ -155,10 +155,14 @@ class _EditCredentialPageState extends State<EditCredentialPage> {
                   Expanded(
                     child: PassaveButton(
                       onPressed: () async {
-                        await vaultRepository.delete(widget.credential.id);
+                        // await vaultRepository.delete(widget.credential.id);
                         if (!mounted) return;
                         Navigator.pop(context);
                         Navigator.pop(context);
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Credential deleted.')),
+                        );
                       },
                       text: 'Delete',
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:passave/core/utils/widgets/passave_scaffold.dart';
+import 'package:passave/features/shell/vault/repository/vault_provider.dart';
 
 import '../../../core/utils/widgets/section_title.dart';
 import 'edit_credential_page.dart';
@@ -21,6 +22,21 @@ class CredentialDetailPage extends StatefulWidget {
 
 class _CredentialDetailPageState extends State<CredentialDetailPage> {
   bool _showPassword = false;
+  late Credential _credential;
+
+  @override
+  void initState() {
+    super.initState();
+    _credential = widget.credential;
+  }
+
+  Future<void> _reload() async {
+    final fresh = await vaultRepository.getById(_credential.id);
+
+    if (fresh != null && mounted) {
+      setState(() => _credential = fresh);
+    }
+  }
 
   void _copyToClipboard(String value, String label) {
     Clipboard.setData(ClipboardData(text: value));
@@ -34,7 +50,7 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final credential = widget.credential;
+    final credential = _credential;
 
     return PassaveScaffold(
       appBar: AppBar(
@@ -43,7 +59,7 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              await Navigator.push(
+              final updated = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => EditCredentialPage(
@@ -51,7 +67,12 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
                   ),
                 ),
               );
-              Navigator.pop(context); // refresh via VaultHome
+              if (updated == true) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Credential updated.')),
+                );
+                _reload();
+              }
             },
           ),
         ],
