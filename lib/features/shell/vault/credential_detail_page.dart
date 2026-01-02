@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:passave/core/utils/widgets/passave_scaffold.dart';
+import 'package:passave/features/shell/vault/add_credential_page.dart';
 import 'package:passave/features/shell/vault/repository/vault_provider.dart';
 
+import '../../../core/utils/widgets/credential_logo.dart';
 import '../../../core/utils/widgets/section_title.dart';
-import 'edit_credential_page.dart';
 import 'models/credential.dart';
 import 'models/security_level.dart';
 
@@ -62,7 +63,7 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
               final updated = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => EditCredentialPage(
+                  builder: (_) => AddCredentialPage(
                     credential: credential,
                   ),
                 ),
@@ -82,7 +83,7 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
           padding: const EdgeInsets.all(16),
           child: ListView(
             children: [
-              _HeaderCard(site: credential.site),
+              _HeaderCard(title: credential.title, site: credential.site),
               const SizedBox(height: 24),
               const SectionTitle(title: 'Username'),
               const SizedBox(height: 8),
@@ -135,9 +136,10 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
 }
 
 class _HeaderCard extends StatelessWidget {
-  final String site;
+  final String title;
+  final String? site;
 
-  const _HeaderCard({required this.site});
+  const _HeaderCard({required this.title, required this.site});
 
   @override
   Widget build(BuildContext context) {
@@ -156,12 +158,17 @@ class _HeaderCard extends StatelessWidget {
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.language),
+            child: CredentialLogo(
+              site: site,
+              size: 56,
+              borderRadius: 16,
+              fallbackText: title,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
-              site,
+              title,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),

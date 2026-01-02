@@ -36,7 +36,7 @@ class _VaultListViewState extends State<VaultListView> {
       final matchesLevel = _filter == null || c.securityLevel == _filter;
 
       final matchesQuery = q.isEmpty ||
-          c.site.toLowerCase().contains(q) ||
+          c.title.toLowerCase().contains(q) ||
           c.username.toLowerCase().contains(q) ||
           (c.notes?.toLowerCase().contains(q) ?? false);
 
@@ -51,7 +51,7 @@ class _VaultListViewState extends State<VaultListView> {
         result.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
         break;
       case VaultSort.alphabetical:
-        result.sort((a, b) => a.site.compareTo(b.site));
+        result.sort((a, b) => a.title.compareTo(b.title));
         break;
     }
 
@@ -96,7 +96,7 @@ class _VaultListViewState extends State<VaultListView> {
   Widget build(BuildContext context) {
     final isSmallScreen = MediaQuery.of(context).size.width < 600;
 
-    List<Widget> _buildChips<T>(
+    List<Widget> buildChips<T>(
       List<T> items,
       T? selected,
       void Function(T?) onSelected,
@@ -135,21 +135,21 @@ class _VaultListViewState extends State<VaultListView> {
       }).toList();
     }
 
-    final securityChips = _buildChips<SecurityLevel?>(
+    final securityChips = buildChips<SecurityLevel?>(
       [null, ...SecurityLevel.values],
       _filter,
       (v) => setState(() => _filter = v),
       isSmallScreen,
     );
 
-    final sortChips = _buildChips<VaultSort>(
+    final sortChips = buildChips<VaultSort>(
       VaultSort.values,
       _sort,
       (v) => setState(() => _sort = v!),
       isSmallScreen,
     );
 
-    TextStyle _textStyle = const TextStyle(
+    TextStyle textStyle = const TextStyle(
       fontSize: 12,
       color: Colors.grey,
       fontWeight: FontWeight.w500,
@@ -167,109 +167,118 @@ class _VaultListViewState extends State<VaultListView> {
 
               final all = snapshot.data ?? const <Credential>[];
               final filtered = _applyFilters(all);
-
-              return Column(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 10, left: 16, right: 16),
-                    child: VaultSearchBar(onChanged: (q) {
-                      setState(() => _query = q.toLowerCase());
-                    }),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16, vertical: isSmallScreen ? 5 : 10),
-                      child: isSmallScreen
-                          ? Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Security Level',
-                                      style: _textStyle,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                        child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: securityChips,
-                                      ),
-                                    )),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Sort by',
-                                      style: _textStyle,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                        child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: sortChips,
-                                      ),
-                                    )),
-                                  ],
-                                ),
-                              ],
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+              return all.isEmpty
+                  ? const _EmptyVaultView()
+                  : Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10, left: 16, right: 16),
+                          child: VaultSearchBar(onChanged: (q) {
+                            setState(() => _query = q.toLowerCase());
+                          }),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: isSmallScreen ? 5 : 10),
+                            child: isSmallScreen
+                                ? Column(
                                     children: [
-                                      Text(
-                                        'Security Level',
-                                        style: _textStyle,
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Security Level',
+                                            style: textStyle,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                              child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              children: securityChips,
+                                            ),
+                                          )),
+                                        ],
                                       ),
-                                      const SizedBox(height: 4),
-                                      Wrap(spacing: 5, children: securityChips),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Sort by',
+                                            style: textStyle,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                              child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              children: sortChips,
+                                            ),
+                                          )),
+                                        ],
+                                      ),
                                     ],
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  )
+                                : Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        'Sort by',
-                                        style: _textStyle,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Security Level',
+                                              style: textStyle,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Wrap(
+                                                spacing: 5,
+                                                children: securityChips),
+                                          ],
+                                        ),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Wrap(spacing: 5, children: sortChips)
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Sort by',
+                                              style: textStyle,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Wrap(
+                                                spacing: 5, children: sortChips)
+                                          ],
+                                        ),
+                                      ),
                                     ],
-                                  ),
-                                ),
-                              ],
-                            )),
-                  Expanded(
-                      child: ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      if (all.isEmpty)
-                        const _EmptyVaultView()
-                      else if (filtered.isEmpty)
-                        _EmptySearchResultView(query: _query)
-                      else
-                        ...filtered.take(filtered.length).map((c) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child:
-                                  VaultItemCard(credential: c, query: _query),
-                            )),
-                      const SizedBox(height: 40),
-                    ],
-                  )),
-                ],
-              );
+                                  )),
+                        Expanded(
+                            child: ListView(
+                          padding: const EdgeInsets.all(16),
+                          children: [
+                            if (all.isEmpty)
+                              const _EmptyVaultView()
+                            else if (filtered.isEmpty)
+                              _EmptySearchResultView(query: _query)
+                            else
+                              ...filtered
+                                  .take(filtered.length)
+                                  .map((c) => Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 12),
+                                        child: VaultItemCard(
+                                            credential: c, query: _query),
+                                      )),
+                            const SizedBox(height: 40),
+                          ],
+                        )),
+                      ],
+                    );
             },
           );
         });

@@ -33,7 +33,7 @@ class SecurityInfoPage extends StatelessWidget {
                   'It is never stored and cannot be recovered by Passave.',
             ),
             const SizedBox(height: 24),
-            _SectionTitle('Recovery & Access'),
+            const _SectionTitle('Recovery & Access'),
             const SizedBox(height: 12),
             const _SecurityCard(
               icon: Icons.vpn_key,
@@ -51,7 +51,7 @@ class SecurityInfoPage extends StatelessWidget {
                   'They never replace your master password.',
             ),
             const SizedBox(height: 24),
-            _SectionTitle('Data Handling'),
+            const _SectionTitle('Data Handling'),
             const SizedBox(height: 12),
             const _SecurityCard(
               icon: Icons.phone_android,
@@ -193,7 +193,7 @@ class _Tag extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
           color: PassaveTheme.primary,

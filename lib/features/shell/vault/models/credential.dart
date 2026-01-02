@@ -2,7 +2,8 @@ import 'package:passave/features/shell/vault/models/security_level.dart';
 
 class Credential {
   final String id;
-  final String site;
+  final String title;
+  final String? site;
   final String username;
   final String password;
   final String? notes;
@@ -12,6 +13,7 @@ class Credential {
 
   Credential({
     required this.id,
+    required this.title,
     required this.site,
     required this.username,
     required this.password,
@@ -22,6 +24,7 @@ class Credential {
   });
 
   Credential copyWith({
+    String? title,
     String? site,
     String? username,
     String? password,
@@ -31,6 +34,7 @@ class Credential {
   }) {
     return Credential(
       id: id,
+      title: title ?? this.title,
       site: site ?? this.site,
       username: username ?? this.username,
       password: password ?? this.password,

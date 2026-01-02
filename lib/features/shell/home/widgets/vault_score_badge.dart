@@ -94,7 +94,7 @@ class VaultScoreBadge extends StatelessWidget {
 }
 
 class _VaultScoreInfoSheet extends StatelessWidget {
-  const _VaultScoreInfoSheet({super.key});
+  const _VaultScoreInfoSheet();
 
   @override
   Widget build(BuildContext context) {

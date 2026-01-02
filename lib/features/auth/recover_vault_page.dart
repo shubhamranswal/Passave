@@ -72,7 +72,10 @@ class _RecoverVaultPageState extends State<RecoverVaultPage> {
                 PassaveTextField(
                   controller: _controller,
                   hint: 'Paste your recovery key here',
-                  icon: Icons.vpn_key,
+                  icon: Icon(
+                    Icons.vpn_key,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   keyboardType: TextInputType.multiline,
                   obscureText: false,
                   maxLines: 3,

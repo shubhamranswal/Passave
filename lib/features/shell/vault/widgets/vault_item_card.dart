@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/credential_logo.dart';
 
 import '../credential_detail_page.dart';
 import '../models/credential.dart';
@@ -33,14 +34,13 @@ class VaultItemCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
+            SizedBox(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-                borderRadius: BorderRadius.circular(12),
+              child: CredentialLogo(
+                site: credential.site,
+                fallbackText: credential.title,
               ),
-              child: const Icon(Icons.language),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -48,15 +48,15 @@ class VaultItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _IconTextRow(
-                    icon: '🌐',
+                    icon: '',
                     child: _HighlightText(
-                        text: credential.site,
+                        text: credential.title,
                         query: query,
                         style: Theme.of(context).textTheme.bodyLarge),
                   ),
                   const SizedBox(height: 4),
                   _IconTextRow(
-                    icon: '👽',
+                    icon: '',
                     child: _HighlightText(
                         text: credential.username,
                         query: query,
@@ -65,7 +65,7 @@ class VaultItemCard extends StatelessWidget {
                   if (credential.notes != null) ...[
                     const SizedBox(height: 4),
                     _IconTextRow(
-                        icon: '📝',
+                        icon: '',
                         child: _HighlightText(
                             text: credential.notes!,
                             query: query,

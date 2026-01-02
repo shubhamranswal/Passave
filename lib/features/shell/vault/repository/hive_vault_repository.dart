@@ -93,6 +93,7 @@ class HiveVaultRepository implements VaultRepository {
   Map<String, dynamic> _toMap(Credential c) {
     return {
       'id': c.id,
+      'title': c.title,
       'site': c.site,
       'username': c.username,
       'password': c.password,
@@ -106,6 +107,7 @@ class HiveVaultRepository implements VaultRepository {
   Credential _fromMap(Map data) {
     return Credential(
       id: data['id'],
+      title: data['title'],
       site: data['site'],
       username: data['username'],
       password: data['password'],

@@ -52,7 +52,8 @@ class EncryptedVaultRepository extends ChangeNotifier
 
   Future<Credential> _encryptCredential(Credential c) async {
     return c.copyWith(
-      site: await _crypto.encrypt(c.site),
+      title: await _crypto.encrypt(c.title),
+      site: await _crypto.encrypt(c.site!),
       username: await _crypto.encrypt(c.username),
       password: await _crypto.encrypt(c.password),
       notes: c.notes == null ? null : await _crypto.encrypt(c.notes!),
@@ -61,7 +62,8 @@ class EncryptedVaultRepository extends ChangeNotifier
 
   Future<Credential> _decryptCredential(Credential c) async {
     return c.copyWith(
-      site: await _crypto.decrypt(c.site),
+      title: await _crypto.decrypt(c.title),
+      site: await _crypto.decrypt(c.site!),
       username: await _crypto.decrypt(c.username),
       password: await _crypto.decrypt(c.password),
       notes: c.notes == null ? null : await _crypto.decrypt(c.notes!),
