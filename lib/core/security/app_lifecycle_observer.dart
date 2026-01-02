@@ -9,18 +9,22 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.inactive:
+        break;
+
       case AppLifecycleState.paused:
-      case AppLifecycleState.hidden:
-        autoLockService.stop();
-        vaultController.lock(reason: 'lifecycle');
+        autoLockService.start();
         break;
 
       case AppLifecycleState.resumed:
-        autoLockService.start();
+        autoLockService.stop();
         vaultController.onAppResumed();
         break;
 
       case AppLifecycleState.detached:
+        autoLockService.lock();
+        break;
+
+      case AppLifecycleState.hidden:
         break;
 
       default:

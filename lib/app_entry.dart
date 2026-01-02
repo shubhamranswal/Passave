@@ -20,7 +20,7 @@ class AppEntry extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        if (!snapshot.data!) {
+        if (snapshot.data != true) {
           return const CreateVaultPage();
         }
         return AnimatedBuilder(

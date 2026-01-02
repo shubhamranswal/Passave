@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:passave/features/shell/account/settings/auto_lock_settings_page.dart';
 import 'package:passave/features/shell/account/settings/change_master_password_page.dart';
+import 'package:passave/features/shell/account/widgets/biometric_toggle_tile.dart';
 
 import '../../../core/crypto/vault/vault_controller.dart';
 import '../../../core/crypto/vault_key_cache.dart';
-import '../../../core/security/biometric_service.dart';
 import '../../../core/utils/widgets/passave_scaffold.dart';
 import 'security_info_page.dart';
 import 'widgets/security_status_tile.dart';
@@ -37,18 +37,7 @@ class AccountPage extends StatelessWidget {
                   ok: vaultUnlocked,
                 ),
                 const SizedBox(height: 12),
-                FutureBuilder<bool>(
-                  future: biometricService.isEnabled(),
-                  builder: (_, snapshot) {
-                    final enabled = snapshot.data ?? false;
-                    return SecurityStatusTile(
-                      icon: Icons.fingerprint,
-                      title: 'Biometrics',
-                      status: enabled ? 'Enabled on this device' : 'Disabled',
-                      ok: enabled,
-                    );
-                  },
-                ),
+                const BiometricToggleTile(),
                 const SizedBox(height: 12),
                 FutureBuilder<bool>(
                   future: vaultKeyCache.load().then((k) => k != null),

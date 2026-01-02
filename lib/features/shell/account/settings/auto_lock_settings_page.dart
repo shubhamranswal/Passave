@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 
 import '../../../../core/security/auto_lock/auto_lock_preferences.dart';
 import '../../../../core/security/auto_lock/auto_lock_service.dart';
@@ -33,7 +34,7 @@ class _AutoLockSettingsPageState extends State<AutoLockSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PassaveScaffold(
       appBar: AppBar(
         title: const Text('Auto-lock Timeout'),
       ),

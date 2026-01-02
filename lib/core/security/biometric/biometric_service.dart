@@ -10,12 +10,22 @@ class BiometricService {
     return await _auth.canCheckBiometrics && await _auth.isDeviceSupported();
   }
 
+  Future<void> disable() async {
+    await _storage.write(key: _enabledKey, value: 'false');
+  }
+
   Future<void> enable() async {
     await _storage.write(key: _enabledKey, value: 'true');
   }
 
   Future<bool> isEnabled() async {
     return await _storage.read(key: _enabledKey) == 'true';
+  }
+
+  Future<bool> shouldUseBiometrics() async {
+    final enabled = await isEnabled();
+    if (!enabled) return false;
+    return isAvailable();
   }
 
   Future<bool> authenticate() async {

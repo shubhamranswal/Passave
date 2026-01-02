@@ -7,6 +7,7 @@ class SecurityStatusTile extends StatelessWidget {
   final String status;
   final bool ok;
   final VoidCallback? onTap;
+  final Widget? trailing;
 
   const SecurityStatusTile({
     super.key,
@@ -15,6 +16,7 @@ class SecurityStatusTile extends StatelessWidget {
     required this.status,
     required this.ok,
     this.onTap,
+    this.trailing,
   });
 
   @override
@@ -48,7 +50,8 @@ class SecurityStatusTile extends StatelessWidget {
                 ],
               ),
             ),
-            if (onTap != null)
+            if (trailing != null) trailing!,
+            if (trailing == null && onTap != null)
               Icon(
                 Icons.chevron_right,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,

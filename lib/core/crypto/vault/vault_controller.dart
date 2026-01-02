@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:passave/core/crypto/key_derivation_service.dart';
 import 'package:passave/core/crypto/vault/recovery_key/recovery_key_service.dart';
 
-import '../../security/biometric_service.dart';
+import '../../security/biometric/biometric_service.dart';
 import '../vault_key_cache.dart';
 import '../vault_key_manager.dart';
 import '../vault_verifier.dart';
@@ -53,11 +53,9 @@ class VaultController extends ChangeNotifier {
 
   Future<bool> unlockWithBiometrics() async {
     try {
-      if (!await biometricService.isEnabled()) return false;
-      if (!await biometricService.isAvailable()) return false;
-
-      final ok = await biometricService.authenticate();
-      if (!ok) return false;
+      if (!await biometricService.shouldUseBiometrics()) return false;
+      final authenticated = await biometricService.authenticate();
+      if (!authenticated) return false;
 
       final cachedKey = await vaultKeyCache.load();
       if (cachedKey == null) return false;
@@ -96,6 +94,7 @@ class VaultController extends ChangeNotifier {
 
   Future<void> onAppResumed() async {
     if (_status == VaultStatus.unlocked) return;
+    await Future.delayed(const Duration(milliseconds: 300));
     await unlockWithBiometrics();
   }
 }
