@@ -14,4 +14,19 @@ class OnboardingService {
   }
 }
 
+class OnboardingSession {
+  String? name;
+  String? email;
+  String? avatarId;
+
+  bool get hasProfile => name != null || email != null || avatarId != null;
+
+  void clear() {
+    name = null;
+    email = null;
+    avatarId = null;
+  }
+}
+
 final onboardingService = OnboardingService();
+final onboardingSession = OnboardingSession();

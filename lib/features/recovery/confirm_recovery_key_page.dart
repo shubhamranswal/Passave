@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:passave/core/crypto/vault/vault_metadata.dart';
+import 'package:passave/core/user/avatar_registry.dart';
 import 'package:passave/core/utils/widgets/passave_button.dart';
 
 import '../../core/crypto/vault/recovery_key/recovery_key_service.dart';
@@ -8,7 +9,9 @@ import '../../core/crypto/vault/vault_creation_session.dart';
 import '../../core/crypto/vault_key_cache.dart';
 import '../../core/crypto/vault_key_manager.dart';
 import '../../core/crypto/vault_verifier.dart';
+import '../../core/onboarding/onboarding_service.dart';
 import '../../core/security/biometric/biometric_service.dart';
+import '../../core/user/user_profile.dart';
 import '../../core/utils/theme/passave_theme.dart';
 import '../../features/shell/main_shell.dart';
 
@@ -67,6 +70,16 @@ class _ConfirmRecoveryKeyPageState extends State<ConfirmRecoveryKeyPage>
 
     await biometricService.enable();
     session.clear();
+
+    await userProfileService.save(
+      UserProfile(
+        name: onboardingSession.name,
+        email: onboardingSession.email,
+        avatarId: onboardingSession.avatarId ?? AvatarRegistry.defaultAvatar(),
+        createdAt: DateTime.now(),
+      ),
+    );
+    onboardingSession.clear();
 
     if (!mounted) return;
     Navigator.pushAndRemoveUntil(

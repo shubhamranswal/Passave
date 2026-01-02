@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:passave/core/crypto/vault/vault_controller.dart';
+import 'package:passave/core/user/avatar_registry.dart';
+import 'package:passave/core/user/user_profile.dart';
 import 'package:passave/features/auth/vault_locked_page.dart';
 import 'package:passave/features/shell/vault/add_credential_page.dart';
 import 'package:passave/features/shell/vault/vault_list_view.dart';
@@ -70,52 +72,63 @@ class _UnlockedShellState extends State<_UnlockedShell> {
 
   @override
   Widget build(BuildContext context) {
-    return PassaveScaffold(
-      appBar: AppBar(
-        title: const Text('Passave'),
-        leading: IconButton(
-          icon: const CircleAvatar(
-            radius: 25,
-            child: Icon(
-              Icons.account_circle_rounded,
-              size: 40,
+    return AnimatedBuilder(
+        animation: userProfileService,
+        builder: (_, __) {
+          final profile = userProfileService.current;
+          return PassaveScaffold(
+            appBar: AppBar(
+              title: Text(
+                  profile?.name != null ? "Hi, ${profile?.name}" : "Passave"),
+              leading: IconButton(
+                icon: CircleAvatar(
+                  radius: 25,
+                  backgroundImage: profile?.avatarId != null
+                      ? AssetImage(
+                          AvatarRegistry.avatars[profile!.avatarId]!,
+                        )
+                      : null,
+                  child: profile?.avatarId == null
+                      ? const Icon(Icons.account_circle)
+                      : null,
+                ),
+                onPressed: () => _open(const AccountPage()),
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.notifications_none),
+                  onPressed: () => _open(const NotificationsPage()),
+                ),
+              ],
             ),
-          ),
-          onPressed: () => _open(const AccountPage()),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () => _open(const NotificationsPage()),
-          ),
-        ],
-      ),
-      floatingActionButton: Container(
-        width: 72,
-        height: 72,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: PassaveTheme.primary.withOpacity(0.4),
-              blurRadius: 20,
-              spreadRadius: 2,
+            floatingActionButton: Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: PassaveTheme.primary.withOpacity(0.4),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: FloatingActionButton(
+                  elevation: 0,
+                  backgroundColor: PassaveTheme.primary,
+                  onPressed: () => _open(const AddCredentialPage()),
+                  child: const Icon(Icons.add, size: 32),
+                ),
+              ),
             ),
-          ],
-        ),
-        child: ClipOval(
-          child: FloatingActionButton(
-            elevation: 0,
-            backgroundColor: PassaveTheme.primary,
-            onPressed: () => _open(const AddCredentialPage()),
-            child: const Icon(Icons.add, size: 32),
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _bottomBar(),
-      body: _buildBody(),
-    );
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            bottomNavigationBar: _bottomBar(),
+            body: _buildBody(),
+          );
+        });
   }
 
   Widget _bottomBar() {

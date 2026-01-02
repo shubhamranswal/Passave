@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passave/core/utils/customs/date_formatter.dart';
 import 'package:passave/core/utils/widgets/passave_scaffold.dart';
 import 'package:passave/features/shell/vault/add_credential_page.dart';
 import 'package:passave/features/shell/vault/repository/vault_provider.dart';
@@ -118,11 +119,13 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
               const SectionTitle(title: 'Metadata'),
               const SizedBox(height: 8),
               _MetaText(
-                text: 'Created • ${credential.createdAt}',
+                text:
+                    'Created • ${DateFormatter.fullDateTime(credential.createdAt)}',
               ),
               const SizedBox(height: 4),
               _MetaText(
-                text: 'Updated • ${credential.updatedAt}',
+                text:
+                    'Updated • ${DateFormatter.fullDateTime(credential.updatedAt)}',
               ),
             ],
           ),
