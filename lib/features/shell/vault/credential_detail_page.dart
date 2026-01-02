@@ -69,9 +69,6 @@ class _CredentialDetailPageState extends State<CredentialDetailPage> {
                 ),
               );
               if (updated == true) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Credential updated.')),
-                );
                 _reload();
               }
             },
