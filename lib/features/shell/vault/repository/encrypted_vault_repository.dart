@@ -57,6 +57,7 @@ class EncryptedVaultRepository extends ChangeNotifier
       username: await _crypto.encrypt(c.username),
       password: await _crypto.encrypt(c.password),
       notes: c.notes == null ? null : await _crypto.encrypt(c.notes!),
+      updatedAt: c.updatedAt,
     );
   }
 
@@ -67,6 +68,7 @@ class EncryptedVaultRepository extends ChangeNotifier
       username: await _crypto.decrypt(c.username),
       password: await _crypto.decrypt(c.password),
       notes: c.notes == null ? null : await _crypto.decrypt(c.notes!),
+      updatedAt: c.updatedAt,
     );
   }
 }
