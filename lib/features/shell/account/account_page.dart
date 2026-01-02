@@ -2,15 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:passave/features/shell/account/settings/auto_lock_settings_page.dart';
 import 'package:passave/features/shell/account/settings/change_master_password_page.dart';
 import 'package:passave/features/shell/account/widgets/biometric_toggle_tile.dart';
+import 'package:passave/features/shell/account/widgets/profile_card.dart';
 
 import '../../../core/crypto/vault/vault_controller.dart';
 import '../../../core/crypto/vault_key_cache.dart';
+import '../../../core/user/user_profile.dart';
 import '../../../core/utils/widgets/passave_scaffold.dart';
 import 'security_info_page.dart';
 import 'widgets/security_status_tile.dart';
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
+
+  @override
+  State<AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
+  UserProfile? profile;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final loadedProfile = await userProfileService.load();
+    setState(() {
+      profile = loadedProfile;
+    });
+  }
 
   void _lockVault(BuildContext context) {
     vaultController.lock(reason: 'manual');
@@ -27,7 +49,7 @@ class AccountPage extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _profileHeader(context),
+              const ProfileCard(),
               _section(context, 'Vault Status'),
               _SectionCard(children: [
                 SecurityStatusTile(
@@ -52,7 +74,6 @@ class AccountPage extends StatelessWidget {
                   },
                 ),
               ]),
-              // const SizedBox(height: 24),
               _section(context, 'Security Controls'),
               _SectionCard(children: [
                 SecurityStatusTile(
@@ -122,42 +143,6 @@ class AccountPage extends StatelessWidget {
             ],
           ),
         ));
-  }
-
-  Widget _profileHeader(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Row(
-        children: [
-          CircleAvatar(
-            radius: 28,
-            child: Icon(Icons.account_circle_rounded, size: 40),
-          ),
-          SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Local Vault',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'This device only',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _section(BuildContext context, String text) {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:passave/features/auth/recover_vault_page.dart';
+import 'package:passave/features/onboarding/create_profile_page.dart';
 
 import 'core/crypto/vault/vault_controller.dart';
 import 'core/crypto/vault/vault_metadata.dart';
-import 'features/auth/create_vault_page.dart';
 import 'features/auth/vault_locked_page.dart';
 import 'features/shell/main_shell.dart';
 
@@ -21,7 +21,7 @@ class AppEntry extends StatelessWidget {
           );
         }
         if (snapshot.data != true) {
-          return const CreateVaultPage();
+          return const CreateProfilePage();
         }
         return AnimatedBuilder(
           animation: vaultController,

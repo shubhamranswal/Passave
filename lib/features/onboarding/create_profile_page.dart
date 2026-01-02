@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../../core/onboarding/onboarding_service.dart';
+import '../../core/user/avatar_registry.dart';
+import '../../core/utils/widgets/avatar_picker.dart';
 import '../../core/utils/widgets/passave_button.dart';
 import '../../core/utils/widgets/passave_scaffold.dart';
 import '../../core/utils/widgets/passave_textfield.dart';
-import '../../features/auth/create_vault_page.dart';
-import 'onboarding_service.dart';
+import '../auth/create_vault_page.dart';
 
 class CreateProfilePage extends StatefulWidget {
   const CreateProfilePage({super.key});
@@ -18,15 +21,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   final _emailController = TextEditingController();
 
   String? _selectedAvatar;
-
-  static const _avatars = [
-    'avatar_1',
-    'avatar_2',
-    'avatar_3',
-    'avatar_4',
-    'avatar_5',
-  ];
-
+  
   @override
   void dispose() {
     _nameController.dispose();
@@ -43,7 +38,8 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
         ? null
         : _emailController.text.trim();
 
-    onboardingSession.avatarId = _selectedAvatar;
+    onboardingSession.avatarId =
+        _selectedAvatar ?? AvatarRegistry.defaultAvatar();
 
     Navigator.push(
       context,
@@ -87,73 +83,38 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                 'This is optional. You can skip and add it later.',
               ),
               const SizedBox(height: 32),
-
-              // Avatar picker
               const Text(
                 'Choose an avatar',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
-              SizedBox(
-                height: 72,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _avatars.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (_, i) {
-                    final id = _avatars[i];
-                    final selected = id == _selectedAvatar;
-
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedAvatar = id;
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: selected
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.transparent,
-                            width: 2,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          radius: 28,
-                          backgroundImage: AssetImage('assets/avatars/$id.png'),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              AvatarPicker(
+                selectedAvatarId:
+                    _selectedAvatar ?? AvatarRegistry.defaultAvatar(),
+                onSelected: (id) {
+                  HapticFeedback.lightImpact();
+                  setState(() {
+                    _selectedAvatar = id;
+                  });
+                },
               ),
-
               const SizedBox(height: 32),
-
-              // Name
               PassaveTextField(
                 controller: _nameController,
                 hint: 'Your name',
-                icon: Icon(Icons.person_outline),
+                icon: const Icon(Icons.person_outline),
                 textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.name,
               ),
-
               const SizedBox(height: 16),
-
-              // Email
               PassaveTextField(
                 controller: _emailController,
-                hint: 'Email (optional)',
-                icon: Icon(Icons.email_outlined),
+                hint: 'Email',
+                icon: const Icon(Icons.email_outlined),
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.done,
               ),
-
               const Spacer(),
-
               Row(
                 children: [
                   Expanded(
